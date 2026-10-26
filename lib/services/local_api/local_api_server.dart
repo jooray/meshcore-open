@@ -5,6 +5,8 @@ import 'dart:typed_data';
 
 import '../../models/channel.dart';
 import '../../models/mesh_event.dart';
+import 'local_api_crypto.dart';
+import 'local_api_pairing.dart';
 import '../../utils/app_logger.dart';
 import 'local_api_host.dart';
 
@@ -29,7 +31,8 @@ class LocalApiServer {
   static const Duration minSendGap = Duration(seconds: 2);
 
   final LocalApiHost host;
-  final String token;
+  final PairingStore pairingStore;
+  final PairingBroker pairingBroker;
   final int port;
 
   HttpServer? _server;
@@ -38,9 +41,10 @@ class LocalApiServer {
 
   LocalApiServer({
     required this.host,
-    required this.token,
+    required this.pairingStore,
+    PairingBroker? pairingBroker,
     this.port = defaultPort,
-  });
+  }) : pairingBroker = pairingBroker ?? PairingBroker();
 
   bool get isRunning => _server != null;
 
@@ -129,6 +133,7 @@ class _ApiClient {
   final Map<String, _Subscription> _subscriptions = {};
   final List<DateTime> _sendTimes = [];
   Timer? _helloTimeout;
+  _Handshake? _handshake;
   bool _authenticated = false;
   bool _closed = false;
   int _queued = 0;
@@ -194,36 +199,170 @@ class _ApiClient {
     }
 
     if (!_authenticated) {
-      _handleHello(decoded);
+      unawaited(_handleHandshake(decoded));
       return;
     }
     unawaited(_dispatch(decoded));
   }
 
-  void _handleHello(Map<String, dynamic> message) {
-    if (message['type'] != 'hello') {
+  Future<void> _handleHandshake(Map<String, dynamic> message) async {
+    switch (message['type']) {
+      case 'hello':
+        _startChallenge(message);
+      case 'pair':
+        await _completePairing(message);
+      default:
+        _enqueue({
+          'type': 'error',
+          'error': {'code': 'unauthorized', 'message': 'hello first'},
+        });
+        unawaited(close(4001, 'hello first'));
+    }
+  }
+
+  void _startChallenge(Map<String, dynamic> message) {
+    if (_handshake != null) {
       _enqueue({
         'type': 'error',
-        'error': {'code': 'unauthorized', 'message': 'hello first'},
+        'error': {'code': 'bad_request', 'message': 'already started'},
+      });
+      return;
+    }
+    final client = message['client'];
+    if (client is! Map) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'bad_request', 'message': 'client is required'},
+      });
+      unawaited(close(4003, 'bad hello'));
+      return;
+    }
+    final name = client['name'];
+    final version = client['version'];
+    final publicKey = client['publicKey'];
+    if (name is! String ||
+        name.trim().isEmpty ||
+        name.length > 64 ||
+        version is! String ||
+        version.length > 32 ||
+        publicKey is! String) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'bad_request', 'message': 'bad client identity'},
+      });
+      unawaited(close(4003, 'bad hello'));
+      return;
+    }
+    final raw = LocalApiCrypto.decodePublicKey(publicKey);
+    if (raw == null) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'bad_request', 'message': 'invalid public key'},
+      });
+      unawaited(close(4003, 'bad key'));
+      return;
+    }
+    final fingerprint = LocalApiCrypto.fingerprint(raw);
+    final known = server.pairingStore.isPaired(publicKey);
+    _handshake = _Handshake(
+      name: name.trim(),
+      version: version,
+      publicKey: publicKey,
+      fingerprint: fingerprint,
+      nonce: LocalApiCrypto.newNonce(),
+      known: known,
+      startedAt: DateTime.now(),
+    );
+    _enqueue({
+      'type': 'pairing.challenge',
+      'protocol': LocalApiServer.protocolVersion,
+      'nonce': _handshake!.nonce,
+      'known': known,
+      'fingerprint': fingerprint,
+      'message': 'meshcore-open-pair-v1:${_handshake!.nonce}',
+    });
+  }
+
+  Future<void> _completePairing(Map<String, dynamic> message) async {
+    final handshake = _handshake;
+    if (handshake == null) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'bad_request', 'message': 'send hello first'},
       });
       unawaited(close(4001, 'hello first'));
       return;
     }
-    final token = message['token'];
-    if (token is! String || !_constantTimeEquals(token, server.token)) {
+    if (DateTime.now().difference(handshake.startedAt) >
+        const Duration(minutes: 2)) {
       _enqueue({
         'type': 'error',
-        'error': {'code': 'unauthorized', 'message': 'bad token'},
+        'error': {'code': 'unauthorized', 'message': 'challenge expired'},
       });
-      unawaited(close(4001, 'unauthorized'));
+      unawaited(close(4001, 'expired'));
       return;
     }
+    final signature = message['signature'];
+    if (signature is! String) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'bad_request', 'message': 'signature is required'},
+      });
+      unawaited(close(4003, 'bad signature'));
+      return;
+    }
+    final publicKeyRaw = LocalApiCrypto.decodePublicKey(handshake.publicKey);
+    final signedMessage = 'meshcore-open-pair-v1:${handshake.nonce}';
+    if (publicKeyRaw == null ||
+        !LocalApiCrypto.verify(publicKeyRaw, signedMessage, signature)) {
+      _enqueue({
+        'type': 'error',
+        'error': {'code': 'unauthorized', 'message': 'bad signature'},
+      });
+      unawaited(close(4003, 'bad signature'));
+      return;
+    }
+
+    if (!handshake.known) {
+      final request = PairingRequest(
+        id: 'p${DateTime.now().microsecondsSinceEpoch}',
+        name: handshake.name,
+        version: handshake.version,
+        publicKey: handshake.publicKey,
+        fingerprint: handshake.fingerprint,
+        requestedAt: DateTime.now(),
+      );
+      final allowed = await server.pairingBroker.ask(request);
+      if (!allowed) {
+        _enqueue({
+          'type': 'error',
+          'error': {'code': 'unauthorized', 'message': 'pairing denied'},
+        });
+        unawaited(close(4003, 'pairing denied'));
+        return;
+      }
+      await server.pairingStore.add(
+        PairedClient(
+          name: handshake.name,
+          publicKey: handshake.publicKey,
+          fingerprint: handshake.fingerprint,
+          pairedAt: DateTime.now(),
+        ),
+      );
+    }
+
     _authenticated = true;
     _helloTimeout?.cancel();
+    _handshake = null;
+    _sendHelloOk(handshake);
+  }
+
+  void _sendHelloOk(_Handshake handshake) {
     final info = server.host.deviceInfo();
     _enqueue({
       'type': 'hello',
       'protocol': LocalApiServer.protocolVersion,
+      'client': {'name': handshake.name, 'fingerprint': handshake.fingerprint},
       'device': {
         'name': info['name'],
         'pubkey': info['pubkey'],
@@ -580,6 +719,26 @@ class _ApiClient {
   }
 }
 
+class _Handshake {
+  final String name;
+  final String version;
+  final String publicKey;
+  final String fingerprint;
+  final String nonce;
+  final bool known;
+  final DateTime startedAt;
+
+  _Handshake({
+    required this.name,
+    required this.version,
+    required this.publicKey,
+    required this.fingerprint,
+    required this.nonce,
+    required this.known,
+    required this.startedAt,
+  });
+}
+
 class _Subscription {
   final Set<String> types;
   final int? channelIndex;
@@ -644,14 +803,4 @@ class _ApiError implements Exception {
   final String message;
 
   _ApiError(this.code, this.message);
-}
-
-bool _constantTimeEquals(String a, String b) {
-  final left = utf8.encode(a);
-  final right = utf8.encode(b);
-  var diff = left.length ^ right.length;
-  for (var i = 0; i < left.length && i < right.length; i++) {
-    diff |= left[i] ^ right[i];
-  }
-  return diff == 0;
 }

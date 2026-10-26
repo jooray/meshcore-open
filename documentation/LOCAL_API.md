@@ -21,8 +21,8 @@ ordinary chat, adverts and any future application.
 
 * **Opt-in, off by default.** No listener, no port, no token until the user turns it on.
 * **Loopback only.** `127.0.0.1`; never a LAN or public interface.
-* **One token, shown once, revocable.** A 32-byte random token in the first message; regenerating
-  it disconnects every client.
+* **Explicit pairing, once per app.** The client proves possession of a P-256 key; the user
+  approves the app in a dialog and the key is remembered. No shared secret to copy around.
 * **No new dependencies.** `dart:io` `HttpServer` + `WebSocketTransformer`.
 * **The radio keeps its own limits.** Sends go through the same quiet-wait, flood-scope and
   command-ack path as the UI; the API cannot bypass rate limits or take over the connection.
@@ -48,14 +48,22 @@ would be a second transport for the same messages.
 
 ### Pairing
 
-Turning the API on generates a token and shows a pairing URI and QR:
+No shared secret and no QR to copy. Each client generates a **P-256 key pair** and keeps the
+private half; the public key is its identity to this app.
 
-```
-meshcore-open://api?url=ws%3A%2F%2F127.0.0.1%3A8787%2Fapi%2Fv1&token=<64 hex>&name=Pixel%2010
-```
+1. Client connects and sends `hello` with its name, version and public key.
+2. Server answers `pairing.challenge` with a random nonce (and whether the key is already known).
+3. Client signs `meshcore-open-pair-v1:<nonce>` (`SHA256withECDSA`, DER or raw `r||s`).
+4. First time only: this app shows **“Allow *Roadbeacon* (AB12 CD34 …) to connect?”** with the key
+   fingerprint. On Allow the key is stored; on Deny the socket is closed. Later connections only
+   re-prove the key and never prompt.
+5. Paired apps are listed in settings and can be revoked; revoking forgets the key, so the next
+   connection asks again.
 
-The consuming app scans or pastes it once. The token is the only authentication: any app on the
-device that has it can read and send. The UI says so, and shows/regenerates the token.
+A key is not a package name: an app could call itself anything. The dialog shows the name and a
+fingerprint the user can compare, and the grant is always explicit. Binding the dialog to the
+Android package would need a bound service with `Binder.getCallingUid()`; this protocol is
+transport-neutral and works on Linux too, so identity here is the key the user approved.
 
 ## Messages
 
@@ -65,7 +73,8 @@ UTF-8 JSON text frames. Requests carry an `id`; responses echo it. Server-initia
 ### Client → server
 
 ```json
-{"type":"hello","token":"<64 hex>","client":{"name":"Roadbeacon","version":"0.4.0"}}
+{"type":"hello","client":{"name":"Roadbeacon","version":"0.4.0","publicKey":"<base64 X||Y>"}}
+{"type":"pair","signature":"<base64 SHA256withECDSA over the nonce message>"}
 {"id":1,"method":"device.info"}
 {"id":2,"method":"events.subscribe","params":{"events":["channel.data"],"channel":"#roadstr","dataTypes":[46674]}}
 {"id":3,"method":"channel.sendData","params":{"channel":"#roadstr","dataType":46674,"payload":"<base64>"}}
@@ -74,7 +83,8 @@ UTF-8 JSON text frames. Requests carry an `id`; responses echo it. Server-initia
 ### Server → client
 
 ```json
-{"type":"hello","protocol":1,"device":{"name":"…","pubkey":"…","firmware":"1.17.1"}}
+{"type":"pairing.challenge","protocol":1,"nonce":"…","known":false,"fingerprint":"AB12 CD34 5678 9ABC","message":"meshcore-open-pair-v1:…"}
+{"type":"hello","protocol":1,"client":{"name":"Roadbeacon","fingerprint":"…"},"device":{…}}
 {"id":1,"ok":true,"result":{"connected":true,"batteryMv":4012,"radio":{"freqHz":869525000,"bwHz":250000,"sf":11,"cr":5},"channels":[{"index":0,"name":"#roadstr"}]}}
 {"id":2,"ok":true,"result":{"subscriptionId":"s1"}}
 {"type":"event","subscriptionId":"s1","event":{"type":"channel.data","channel":"#roadstr","channelIndex":0,"dataType":46674,"payload":"<base64>","snrDb":-7.25,"receivedAt":"2026-10-26T12:00:00Z","outgoing":false}}
@@ -136,15 +146,16 @@ means the firmware accepted the packet.
 
 ## Security
 
-* Off by default; enabling it is a deliberate action with a warning that any app on the device
-  with the token can read messages and transmit.
+* Off by default; enabling it is a deliberate action, and every app is approved by the user with a
+  visible name and key fingerprint before it can read or transmit.
 * Loopback bind only. No UDP broadcast, no mDNS, no LAN.
-* Token comparison in constant time; token never logged. Message contents are never logged.
+* Only a public key is stored; the private key never leaves the client app. Message contents and
+  keys are never logged.
 * The API cannot change radio settings, channels, contacts or keys in v1. Reads are limited to
   what a chat client would show.
-* A malicious app with the token can transmit on the user's radio and read their messages. That
-  is the same power the user's own chat app has; the token is the boundary, so it must be treated
-  like a password. Regenerating it disconnects everyone.
+* An approved app can transmit on the user's radio and read their messages. That is the same power
+  the user's own chat app has; approval is the boundary, so the dialog states it and every grant is
+  revocable.
 * The server runs in the main isolate next to the connector, so it is only alive while the app
   process is (including the Android foreground service).
 
@@ -164,9 +175,9 @@ additive, a changed field meaning is not. Clients must ignore unknown fields and
 
 ## Open questions for the maintainer
 
-1. WebSocket on loopback versus an Android bound service (AIDL) — WS is cross-platform and
-   testable; AIDL is Android-only but needs no port/token.
-2. Whether a *read-only* token (subscribe, no send) is worth a second toggle.
+1. WebSocket on loopback plus key pairing versus an Android bound service (AIDL) with a runtime
+   permission — WS is cross-platform and testable; AIDL gives the OS dialog and a verified package.
+2. Whether a *read-only* grant (subscribe, no send) is worth a second switch per app.
 3. Whether the API should be exposed while the app is in the background only via the foreground
    service, or always while the process is alive.
 4. Naming: `local API`, `radio bridge`, `companion API`.
