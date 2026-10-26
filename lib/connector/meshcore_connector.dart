@@ -10,7 +10,9 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_blue_plus_platform_interface/flutter_blue_plus_platform_interface.dart';
 
 import '../models/channel.dart';
+import '../models/channel_data_packet.dart';
 import '../models/channel_message.dart';
+import '../models/mesh_event.dart';
 import '../models/companion_radio_stats.dart';
 import '../models/contact.dart';
 import '../models/message.dart';
@@ -29,9 +31,12 @@ import '../services/image_chunk_transport.dart'
     show
         ImageChunkOutcome,
         ImageChunkTransport,
+        ParsedChannelData,
         buildSendChannelDataFrame,
         dataTypeAeicImage,
+        kMaxChannelDataPayload,
         outPathUnknown,
+        parseChannelDataFrame,
         respCodeChannelDataRecv,
         senderPrefixFromKey;
 import '../services/image_codec_service.dart';
@@ -283,6 +288,15 @@ class MeshCoreConnector extends ChangeNotifier {
 
   final StreamController<Uint8List> _receivedFramesController =
       StreamController<Uint8List>.broadcast();
+
+  /// Generic `GRP_DATA` datagrams, inbound and own outbound. Broadcast: the
+  /// image transport keeps its own listener, external bridges add theirs.
+  final StreamController<ChannelDataPacket> _channelDataController =
+      StreamController<ChannelDataPacket>.broadcast();
+
+  /// Live traffic for out-of-process consumers (see documentation/LOCAL_API.md).
+  final StreamController<MeshEvent> _meshEventController =
+      StreamController<MeshEvent>.broadcast();
 
   Uint8List? _selfPublicKey;
   String? _selfName;
@@ -642,6 +656,16 @@ class MeshCoreConnector extends ChangeNotifier {
   @visibleForTesting
   bool get channelMapConfirmed => _channelMapConfirmed;
   Stream<Uint8List> get receivedFrames => _receivedFramesController.stream;
+
+  /// Every channel data datagram seen by this client: received ones (any
+  /// `dataType`, including image chunks) and, after the radio acknowledges
+  /// them, our own sends. Applications filter by channel name and `dataType`.
+  Stream<ChannelDataPacket> get channelDataStream =>
+      _channelDataController.stream;
+
+  /// Every live mesh event — channel text, channel data, direct messages and
+  /// adverts — as one stream. Intended for bridges and the local API.
+  Stream<MeshEvent> get meshEvents => _meshEventController.stream;
   Uint8List? get selfPublicKey => _selfPublicKey;
   String get selfPublicKeyHex => pubKeyToHex(_selfPublicKey ?? Uint8List(0));
 
@@ -4491,6 +4515,7 @@ class MeshCoreConnector extends ChangeNotifier {
         translationModelId: translationModelId,
       );
       _addMessage(contact.publicKeyHex, message); // recipient as "sender"
+      _emitDirectTextEvent(message);
       notifyListeners();
       final outboundText = prepareContactOutboundText(contact, text);
       await sendFrame(buildSendTextMsgFrame(contact.publicKey, outboundText));
@@ -4927,6 +4952,7 @@ class MeshCoreConnector extends ChangeNotifier {
       replyTo: replyTo,
     );
     _addChannelMessage(channel.index, message);
+    _emitChannelTextEvent(message);
     _pendingChannelSentQueue.add(message.messageId);
     notifyListeners();
 
@@ -5130,6 +5156,137 @@ class MeshCoreConnector extends ChangeNotifier {
       }
     }, region: _channelSendScope(channelIndex));
     return sentAll;
+  }
+
+  /// Sends one arbitrary application datagram on [channelIndex], using the
+  /// same quiet-wait, scope and command-ack path as channel messages.
+  ///
+  /// This is the general form of [sendImageChunks]: `dataType` selects the
+  /// application namespace and [payload] is opaque to the radio. The command
+  /// ack means the firmware queued the packet, not that anyone received it.
+  ///
+  /// Returns false when the transport is unavailable (disconnected, firmware
+  /// too old) or the payload is empty or larger than [kMaxChannelDataPayload].
+  /// Throws what [_sendFrameAndWaitForCommandAck] throws (firmware error codes
+  /// or a timeout).
+  Future<bool> sendChannelData({
+    required int channelIndex,
+    required int dataType,
+    required Uint8List payload,
+    int pathLen = outPathUnknown,
+    Uint8List? path,
+    String? region,
+  }) async {
+    if (!supportsChannelData) return false;
+    if (payload.isEmpty || payload.length > kMaxChannelDataPayload) {
+      return false;
+    }
+    if (dataType <= 0 || dataType > 0xFFFF) return false;
+    if (pathLen != outPathUnknown && (path == null || path.length != pathLen)) {
+      return false;
+    }
+
+    await _runScopedChannelSend(() async {
+      await _waitForRadioQuiet(lastInboundRxTime: _lastChannelMsgRxTime);
+      await _sendFrameAndWaitForCommandAck(
+        buildSendChannelDataFrame(
+          channelIndex: channelIndex,
+          dataType: dataType,
+          payload: payload,
+          pathLen: pathLen,
+          path: path,
+        ),
+      );
+    }, region: region ?? _channelSendScope(channelIndex));
+
+    _emitChannelData(
+      ParsedChannelData(
+        snrRaw: 0,
+        channelIndex: channelIndex,
+        pathLenByte: pathLen,
+        dataType: dataType,
+        payload: payload,
+      ),
+      outgoing: true,
+    );
+    return true;
+  }
+
+  void _emitMeshEvent(MeshEvent event) {
+    if (!_meshEventController.isClosed) _meshEventController.add(event);
+  }
+
+  void _emitChannelTextEvent(ChannelMessage message) {
+    final index = message.channelIndex;
+    if (index == null) return;
+    _emitMeshEvent(
+      ChannelTextEvent(
+        channelIndex: index,
+        channelName: _channelNameForIndex(index),
+        senderName: message.senderName,
+        senderKeyHex: message.senderKey == null
+            ? null
+            : pubKeyToHex(message.senderKey!),
+        text: message.text,
+        sentAt: message.timestamp,
+        messageId: message.messageId,
+        outgoing: message.isOutgoing,
+        receivedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  void _emitDirectTextEvent(Message message) {
+    final keyHex = pubKeyToHex(message.senderKey);
+    _emitMeshEvent(
+      DirectTextEvent(
+        pubkeyHex: keyHex,
+        name: getContactByPubKeyHex(keyHex)?.name,
+        text: message.text,
+        sentAt: message.timestamp,
+        messageId: message.messageId,
+        outgoing: message.isOutgoing,
+        receivedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  void _emitChannelData(ParsedChannelData parsed, {required bool outgoing}) {
+    if (_channelDataController.isClosed) return;
+    final name = _channelNameForIndex(parsed.channelIndex);
+    final receivedAt = DateTime.now();
+    _channelDataController.add(
+      ChannelDataPacket(
+        channelIndex: parsed.channelIndex,
+        channelName: name,
+        dataType: parsed.dataType,
+        payload: parsed.payload,
+        snrRaw: parsed.snrRaw,
+        receivedAt: receivedAt,
+        outgoing: outgoing,
+      ),
+    );
+    _emitMeshEvent(
+      ChannelDataEvent(
+        channelIndex: parsed.channelIndex,
+        channelName: name,
+        dataType: parsed.dataType,
+        payload: parsed.payload,
+        snrRaw: parsed.snrRaw,
+        outgoing: outgoing,
+        receivedAt: receivedAt,
+      ),
+    );
+  }
+
+  String _channelNameForIndex(int index) {
+    for (final channel in _channels) {
+      if (channel.index == index) return channel.name;
+    }
+    for (final channel in _cachedChannels) {
+      if (channel.index == index) return channel.name;
+    }
+    return '';
   }
 
   Future<void> _runScopedChannelSend(
@@ -6864,6 +7021,15 @@ class MeshCoreConnector extends ChangeNotifier {
       return;
     }
     _handleDiscovery(contact, frame);
+    _emitMeshEvent(
+      AdvertEvent(
+        pubkeyHex: contact.publicKeyHex,
+        name: contact.name,
+        type: contact.type,
+        lastSeen: contact.lastSeen,
+        receivedAt: DateTime.now(),
+      ),
+    );
     notifyListeners();
   }
 
@@ -7260,6 +7426,7 @@ class MeshCoreConnector extends ChangeNotifier {
         }
       }
       _addMessage(message.senderKeyHex, message);
+      _emitDirectTextEvent(message);
       _maybeIncrementContactUnread(message);
       notifyListeners();
 
@@ -7664,6 +7831,10 @@ class MeshCoreConnector extends ChangeNotifier {
     // Anchor the post-RX backoff for our own next channel send, exactly as
     // _handleIncomingChannelMessage does.
     _lastChannelMsgRxTime = DateTime.now();
+    final parsed = parseChannelDataFrame(frame);
+    if (parsed != null) {
+      _emitChannelData(parsed, outgoing: false);
+    }
     final outcome = _imageTransport?.handleFrame(frame);
     if (outcome == null) return; // Not an AEIC image chunk.
     _onImageChunk?.call(outcome);
@@ -7695,6 +7866,7 @@ class MeshCoreConnector extends ChangeNotifier {
         pathHashWidth: message.pathHashWidth,
       );
       final isNew = _addChannelMessage(message.channelIndex!, message);
+      if (isNew) _emitChannelTextEvent(message);
       _maybeIncrementChannelUnread(message, isNew: isNew);
       notifyListeners();
       if (isNew && !message.isOutgoing) {
@@ -9013,6 +9185,8 @@ class MeshCoreConnector extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _channelDataController.close();
+    _meshEventController.close();
     _appSettingsService?.removeListener(_onAppSettingsChanged);
     _scanSubscription?.cancel();
     _isScanningSubscription?.cancel();
