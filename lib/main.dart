@@ -498,14 +498,14 @@ class _MeshCoreAppState extends State<MeshCoreApp> with WidgetsBindingObserver {
               NotificationService().setLocale(locale);
               return AnnotatedRegion<SystemUiOverlayStyle>(
                 value: _systemUiOverlayStyle(context),
-                child: LocalApiPairingHost(
-                  child: child ?? const SizedBox.shrink(),
-                ),
+                child: child ?? const SizedBox.shrink(),
               );
             },
-            home: (PlatformInfo.isWeb && !PlatformInfo.isChrome)
-                ? const ChromeRequiredScreen()
-                : const ScannerScreen(),
+            home: LocalApiPairingHost(
+              child: (PlatformInfo.isWeb && !PlatformInfo.isChrome)
+                  ? const ChromeRequiredScreen()
+                  : const ScannerScreen(),
+            ),
           );
         },
       ),
