@@ -6608,4 +6608,82 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get networkMap_unnamed => 'Ripetitore senza nome';
+
+  @override
+  String get localApi_title => 'API locale';
+
+  @override
+  String get localApi_settingsSubtitle =>
+      'Consenti ad altre app di usare la radio';
+
+  @override
+  String get localApi_unavailable => 'L’API non è disponibile.';
+
+  @override
+  String get localApi_enableSubtitle =>
+      'Consente ad altre app su questo dispositivo di usare la radio tramite MeshCore Open. Ogni app chiede il permesso la prima volta.';
+
+  @override
+  String get localApi_address => 'Indirizzo';
+
+  @override
+  String get localApi_off => 'Disattivata';
+
+  @override
+  String get localApi_allowedApps => 'App consentite';
+
+  @override
+  String get localApi_allowedAppsSubtitle =>
+      'Approvate al primo collegamento. Se ne rimuovi una, chiederà di nuovo.';
+
+  @override
+  String get localApi_noApps => 'Ancora nessuna app';
+
+  @override
+  String get localApi_noAppsSubtitle =>
+      'Qui comparirà una richiesta quando un’app si collega.';
+
+  @override
+  String localApi_pairedOn(String date) {
+    return 'Associata $date';
+  }
+
+  @override
+  String get localApi_remove => 'Rimuovi';
+
+  @override
+  String get localApi_clearData => 'Cancella dati radio salvati';
+
+  @override
+  String get localApi_clearDataSubtitle =>
+      'Rimuove i dati di canale conservati per le app che non erano in esecuzione.';
+
+  @override
+  String get localApi_dataCleared => 'Dati radio salvati cancellati';
+
+  @override
+  String get localApi_pairTitle => 'Consentire la connessione?';
+
+  @override
+  String localApi_pairBody(String name) {
+    return '«$name» vuole inviare e ricevere messaggi MeshCore tramite questa app finché mantiene la radio collegata.';
+  }
+
+  @override
+  String get localApi_keyFingerprint => 'Impronta della chiave';
+
+  @override
+  String get localApi_pairWarning =>
+      'Consenti solo app di cui ti fidi: potranno leggere i tuoi messaggi e trasmettere con la tua radio.';
+
+  @override
+  String get localApi_deny => 'Nega';
+
+  @override
+  String get localApi_allow => 'Consenti';
+
+  @override
+  String localApi_pairExpired(String name) {
+    return '«$name» ha smesso di attendere prima di essere consentita. Riaprila per associarla.';
+  }
 }

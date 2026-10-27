@@ -29,6 +29,7 @@ MeshCore Open is an open-source Flutter client for MeshCore LoRa mesh networking
 16. [Troubleshooting](troubleshooting.md) - BLE, USB, browser, and firmware issues
 17. [Review Mode](review-mode.md) - Simulated radio and reviewer instructions for Google Play and App Store review
 18. [Network Map](network-map.md) - Online repeater map, adding and managing repeaters from it, opt-in uploads, and hiding a repeater
+19. [Local API](LOCAL_API.md) - Loopback WebSocket API that lets other apps on the device share the radio connection
 
 ## App Overview
 

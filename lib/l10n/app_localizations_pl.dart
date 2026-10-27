@@ -6628,4 +6628,82 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get networkMap_unnamed => 'Repeater bez nazwy';
+
+  @override
+  String get localApi_title => 'Lokalne API';
+
+  @override
+  String get localApi_settingsSubtitle =>
+      'Pozwól innym aplikacjom używać radia';
+
+  @override
+  String get localApi_unavailable => 'API jest niedostępne.';
+
+  @override
+  String get localApi_enableSubtitle =>
+      'Pozwala innym aplikacjom na tym urządzeniu używać radia przez MeshCore Open. Każda aplikacja za pierwszym razem prosi o zgodę.';
+
+  @override
+  String get localApi_address => 'Adres';
+
+  @override
+  String get localApi_off => 'Wyłączone';
+
+  @override
+  String get localApi_allowedApps => 'Dozwolone aplikacje';
+
+  @override
+  String get localApi_allowedAppsSubtitle =>
+      'Zatwierdzone przy pierwszym połączeniu. Usunięta aplikacja zapyta ponownie.';
+
+  @override
+  String get localApi_noApps => 'Brak aplikacji';
+
+  @override
+  String get localApi_noAppsSubtitle =>
+      'Prośba pojawi się tutaj, gdy aplikacja się połączy.';
+
+  @override
+  String localApi_pairedOn(String date) {
+    return 'Sparowano $date';
+  }
+
+  @override
+  String get localApi_remove => 'Usuń';
+
+  @override
+  String get localApi_clearData => 'Wyczyść zapisane dane radia';
+
+  @override
+  String get localApi_clearDataSubtitle =>
+      'Usuwa dane kanałów zachowane dla aplikacji, które nie działały.';
+
+  @override
+  String get localApi_dataCleared => 'Wyczyszczono zapisane dane radia';
+
+  @override
+  String get localApi_pairTitle => 'Zezwolić na połączenie?';
+
+  @override
+  String localApi_pairBody(String name) {
+    return '„$name” chce wysyłać i odbierać wiadomości MeshCore przez tę aplikację, gdy utrzymuje ona połączenie z radiem.';
+  }
+
+  @override
+  String get localApi_keyFingerprint => 'Odcisk klucza';
+
+  @override
+  String get localApi_pairWarning =>
+      'Zezwalaj tylko zaufanym aplikacjom: będą mogły czytać twoje wiadomości i nadawać przez twoje radio.';
+
+  @override
+  String get localApi_deny => 'Odmów';
+
+  @override
+  String get localApi_allow => 'Zezwól';
+
+  @override
+  String localApi_pairExpired(String name) {
+    return '„$name” przestała czekać, zanim została dopuszczona. Otwórz ją ponownie, aby sparować.';
+  }
 }
