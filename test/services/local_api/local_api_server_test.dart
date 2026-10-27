@@ -330,6 +330,7 @@ class _Connection {
 class _FakeHost implements LocalApiHost {
   final _controller = StreamController<MeshEvent>.broadcast();
   final List<List<int>> sent = [];
+  String? lastRegion;
 
   @override
   Stream<MeshEvent> get events => _controller.stream;
@@ -381,15 +382,21 @@ class _FakeHost implements LocalApiHost {
   Contact? resolveContact(String pubkeyHex) => null;
 
   @override
-  Future<void> sendChannelText(Channel channel, String text) async {}
+  Future<void> sendChannelText(
+    Channel channel,
+    String text, {
+    String? region,
+  }) async {}
 
   @override
   Future<bool> sendChannelData(
     Channel channel,
     int dataType,
-    Uint8List payload,
-  ) async {
+    Uint8List payload, {
+    String? region,
+  }) async {
     sent.add(payload.toList());
+    lastRegion = region;
     return true;
   }
 

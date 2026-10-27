@@ -124,6 +124,7 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/fonts/
+    - assets/mesh_regions.json
 
   fonts:
     - family: Inter

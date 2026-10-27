@@ -99,6 +99,26 @@ class _LocalApiScreenState extends State<LocalApiScreen> {
                     ),
                   ),
                 const Divider(),
+                if (service.regions.isNotEmpty)
+                  ExpansionTile(
+                    leading: const Icon(Icons.public),
+                    title: const Text('Suggested flood regions'),
+                    subtitle: Text(
+                      '${service.regions.length} areas. The nearest centre whose '
+                      'radius contains a point wins; country entries are fallbacks.',
+                    ),
+                    children: [
+                      for (final region in service.regions)
+                        ListTile(
+                          dense: true,
+                          title: Text('${region.label} (${region.name})'),
+                          subtitle: Text(
+                            '${region.kind} · ${region.radiusKm.round()} km radius',
+                          ),
+                        ),
+                    ],
+                  ),
+                const Divider(),
                 ListTile(
                   leading: const Icon(Icons.delete_sweep_outlined),
                   title: const Text('Clear stored radio data'),

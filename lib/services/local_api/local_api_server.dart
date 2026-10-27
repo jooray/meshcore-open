@@ -10,6 +10,7 @@ import 'local_api_crypto.dart';
 import 'local_api_pairing.dart';
 import '../../utils/app_logger.dart';
 import 'local_api_host.dart';
+import 'mesh_regions.dart';
 
 /// Local WebSocket API for other apps on the same device.
 ///
@@ -35,6 +36,7 @@ class LocalApiServer {
   final PairingStore pairingStore;
   final PairingBroker pairingBroker;
   final LocalApiArchive? archive;
+  final MeshRegionCatalog? regions;
   final int port;
 
   HttpServer? _server;
@@ -46,6 +48,7 @@ class LocalApiServer {
     required this.pairingStore,
     PairingBroker? pairingBroker,
     this.archive,
+    this.regions,
     this.port = defaultPort,
   }) : pairingBroker = pairingBroker ?? PairingBroker();
 
@@ -418,6 +421,38 @@ class _ApiClient {
         return {...info, 'channels': server.host.channels()};
       case 'channels.list':
         return {'channels': server.host.channels()};
+      case 'regions.list':
+        return {'regions': server.regions?.toJson() ?? const []};
+      case 'regions.resolve':
+        final latitude = params['lat'] is num
+            ? (params['lat'] as num).toDouble()
+            : null;
+        final longitude = params['lon'] is num
+            ? (params['lon'] as num).toDouble()
+            : null;
+        if (latitude == null || longitude == null) {
+          throw _ApiError('bad_request', 'lat and lon are required');
+        }
+        if (latitude < -90 ||
+            latitude > 90 ||
+            longitude < -180 ||
+            longitude > 180) {
+          throw _ApiError('coordinate_range', 'lat/lon out of range');
+        }
+        final region = server.regions?.resolve(latitude, longitude);
+        return {
+          'region': region == null
+              ? null
+              : {
+                  ...region.toJson(),
+                  'distanceKm': distanceKmBetween(
+                    latitude,
+                    longitude,
+                    region.latitude,
+                    region.longitude,
+                  ),
+                },
+        };
       case 'contacts.list':
         final limit = _intParam(params, 'limit', fallback: 200);
         return {'contacts': server.host.contacts(limit: limit.clamp(1, 500))};
@@ -432,8 +467,9 @@ class _ApiClient {
       case 'channel.sendText':
         final channel = _channelParam(params);
         final text = _textParam(params, 'text');
+        final region = _regionParam(params);
         _spendSendQuota();
-        await server.host.sendChannelText(channel, text);
+        await server.host.sendChannelText(channel, text, region: region);
         return const {'queued': true};
       case 'channel.sendData':
         final channel = _channelParam(params);
@@ -449,11 +485,13 @@ class _ApiClient {
                 '${LocalApiServer.maxPayloadBytes}',
           );
         }
+        final region = _regionParam(params);
         _spendSendQuota();
         final sent = await server.host.sendChannelData(
           channel,
           dataType,
           payload,
+          region: region,
         );
         if (!sent) {
           throw _ApiError(
@@ -679,6 +717,15 @@ class _ApiClient {
       return DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true);
     }
     return null;
+  }
+
+  String? _regionParam(Map<String, dynamic> params) {
+    final raw = params['region'];
+    if (raw == null) return null;
+    if (raw is! String || raw.isEmpty || raw.length > 32) {
+      throw _ApiError('bad_request', 'region must be a short string');
+    }
+    return raw;
   }
 
   void _spendSendQuota() {

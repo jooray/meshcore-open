@@ -26,15 +26,16 @@ abstract class LocalApiHost {
 
   Contact? resolveContact(String pubkeyHex);
 
-  Future<void> sendChannelText(Channel channel, String text);
+  Future<void> sendChannelText(Channel channel, String text, {String? region});
 
   /// Returns false when the transport cannot send (disconnected, firmware too
   /// old); throws on a firmware error or command timeout.
   Future<bool> sendChannelData(
     Channel channel,
     int dataType,
-    Uint8List payload,
-  );
+    Uint8List payload, {
+    String? region,
+  });
 
   Future<void> sendDirectText(Contact contact, String text);
 
@@ -121,18 +122,23 @@ class ConnectorLocalApiHost implements LocalApiHost {
       connector.getContactByPubKeyHex(pubkeyHex);
 
   @override
-  Future<void> sendChannelText(Channel channel, String text) =>
-      connector.sendChannelMessage(channel, text);
+  Future<void> sendChannelText(
+    Channel channel,
+    String text, {
+    String? region,
+  }) => connector.sendChannelMessage(channel, text, region: region);
 
   @override
   Future<bool> sendChannelData(
     Channel channel,
     int dataType,
-    Uint8List payload,
-  ) => connector.sendChannelData(
+    Uint8List payload, {
+    String? region,
+  }) => connector.sendChannelData(
     channelIndex: channel.index,
     dataType: dataType,
     payload: payload,
+    region: region,
   );
 
   @override

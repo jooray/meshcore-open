@@ -9,6 +9,7 @@ import 'local_api_archive.dart';
 import 'local_api_host.dart';
 import 'local_api_pairing.dart';
 import 'local_api_server.dart';
+import 'mesh_regions.dart';
 
 /// Lifecycle for the local API.
 ///
@@ -36,6 +37,7 @@ class LocalApiService {
   final PairingStore pairingStore = PrefsPairingStore();
   final PairingBroker pairingBroker = PairingBroker();
   final LocalApiArchive archive = LocalApiArchive();
+  MeshRegionCatalog? _regions;
   LocalApiServer? _server;
   MeshCoreConnector? _connector;
   StreamSubscription<MeshEvent>? _eventSubscription;
@@ -54,6 +56,7 @@ class LocalApiService {
     await _loadSettings();
     await pairingStore.load();
     await archive.load();
+    _regions ??= await MeshRegionCatalog.load();
     _eventSubscription ??= connector.meshEvents.listen((event) {
       if (event is ChannelDataEvent) archive.record(event);
     });
@@ -82,6 +85,8 @@ class LocalApiService {
 
   List<PairedClient> get pairedClients => pairingStore.clients;
 
+  List<MeshRegion> get regions => _regions?.regions ?? const [];
+
   Future<void> _loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
     _enabled = prefs.getBool(_enabledKey) ?? _defaultEnabled;
@@ -95,6 +100,7 @@ class LocalApiService {
       pairingStore: pairingStore,
       pairingBroker: pairingBroker,
       archive: archive,
+      regions: _regions,
       port: _port,
     );
     try {

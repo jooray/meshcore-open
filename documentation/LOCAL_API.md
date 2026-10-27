@@ -98,15 +98,21 @@ UTF-8 JSON text frames. Requests carry an `id`; responses echo it. Server-initia
 | `device.info` | — | connection state, node name/pubkey, firmware, battery, radio parameters, channels |
 | `channels.list` | — | `[{index,name,type,isPublic,storageId}]` |
 | `contacts.list` | `{limit?, since?}` | `[{pubkey,name,type,lastSeen}]` |
+| `regions.list` | — | suggested flood-scope areas: `[{name,label,kind,lat,lon,radiusKm}]` |
+| `regions.resolve` | `{lat,lon}` | `{region:{…,distanceKm}}` or `{region:null}` |
 | `events.subscribe` | `{events:[…], channel?, channelIndex?, dataTypes?, pubkeys?}` | `{subscriptionId}` |
 | `events.unsubscribe` | `{subscriptionId}` | `{}` |
-| `channel.sendText` | `{channel, text, replyToMessageId?}` | `{queued:true, messageId}` |
-| `channel.sendData` | `{channel, dataType, payload(base64), path?}` | `{queued:true}` |
+| `channel.sendText` | `{channel, text, region?, replyToMessageId?}` | `{queued:true, messageId}` |
+| `channel.sendData` | `{channel, dataType, payload(base64), region?}` | `{queued:true}` |
 | `direct.sendText` | `{pubkey, text}` | `{queued:true, messageId}` |
 | `advert.send` | `{flood?:true}` | `{queued:true}` |
 
 `channel` is the channel **name** (e.g. `#roadstr`) or an index as a string. Names are resolved
 case-sensitively against `channels.list`; an unknown or ambiguous name is an error.
+
+`region` overrides the channel's flood scope for this message only. It is a MeshCore region name
+(the same string repeaters in that area are configured with); it is passed to the radio unscoped
+if the radio does not know it, so an unknown name is not an error here.
 
 ### Events
 
@@ -144,6 +150,29 @@ revoked app's interests are forgotten with it.
 `unauthorized`, `bad_request`, `unknown_method`, `not_connected`, `unsupported_firmware`,
 `unknown_channel`, `ambiguous_channel`, `unknown_contact`, `payload_too_large` (over 163 bytes),
 `invalid_data_type` (0 or > 0xFFFF), `rate_limited`, `internal`.
+
+## Regions and the static map
+
+The API ships a small, editable catalogue (`assets/mesh_regions.json`) of flood-scope areas:
+name, label, centre and radius. `regions.resolve` picks the **nearest centre whose circle contains
+the point**; a city entry beats the country fallback because it is nearer, not because of its kind.
+For an event at 48.15, 17.11 that is `sk-ba` (Bratislava, 100 km) rather than `sk` (Slovakia,
+350 km). The names are suggestions: a community must configure its repeaters with the same names.
+
+A client that wants less airtime than the whole country resolves the event position once and sends
+`region:"sk-ba"`; the bridge/daemon does not guess.
+
+## Useful extensions (not in v1)
+
+* `device.status` — battery, queue depth, radio parameters, firmware, so a client can show why a
+  send is refused without a second call.
+* `regions.setChannel` / `regions.default` — read and set the channel's scope, instead of only
+  overriding per message.
+* `messages.history` / `events.history` for text with `since` (channel data already supports it).
+* Per-grant scopes: a read-only grant (subscribe, no send) and a send-only grant.
+* `radio.stats` — airtime, noise floor, RSSI/SNR of the last packet, for diagnostics.
+* Multi-channel subscriptions (`channels:[…]`) instead of one channel per subscription.
+* A stable `capabilities` list so clients can feature-detect without version tables.
 
 ## Limits
 
