@@ -1,6 +1,6 @@
 # Local API — letting other apps use the radio
 
-Status: **proposal**. Not implemented in `main`/`dev` yet.
+Status: **implemented on `feat/local-api`** (fork), proposed upstream in zjs81/meshcore-open#616. Not merged into `main`/`dev` yet.
 
 ## Why
 
