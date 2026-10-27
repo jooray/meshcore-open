@@ -6666,4 +6666,22 @@ class AppLocalizationsHu extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return 'A(z) „$name” abbahagyta a várakozást, mielőtt engedélyt kapott. Nyisd meg újra a párosításhoz.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Javasolt flood-régiók';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count terület. Az alkalmazások lekérhetik a legközelebbit, amelynek sugara tartalmaz egy pontot.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Város · $radius km sugár';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Ország · $radius km sugár';
+  }
 }

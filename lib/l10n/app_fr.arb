@@ -3632,5 +3632,30 @@
         "type": "String"
       }
     }
+  },
+  "localApi_regionsTitle": "Régions de diffusion suggérées",
+  "localApi_regionsSubtitle": "{count} zones. Les apps peuvent demander la plus proche dont le rayon contient un point.",
+  "@localApi_regionsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCity": "Ville · rayon de {radius} km",
+  "@localApi_regionCity": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCountry": "Pays · rayon de {radius} km",
+  "@localApi_regionCountry": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
   }
 }

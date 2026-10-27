@@ -6660,4 +6660,22 @@ class AppLocalizationsSk extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ prestala čakať skôr, než bola povolená. Otvorte ju znova a spárujte.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Odporúčané regióny';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count oblastí. Aplikácie si môžu vyžiadať najbližšiu, ktorej polomer obsahuje daný bod.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Mesto · polomer $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Krajina · polomer $radius km';
+  }
 }

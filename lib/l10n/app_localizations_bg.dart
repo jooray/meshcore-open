@@ -6680,4 +6680,22 @@ class AppLocalizationsBg extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ спря да чака, преди да бъде разрешено. Отворете го отново, за да го сдвоите.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Препоръчани региони за разпращане';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count области. Приложенията могат да поискат най-близката, чийто радиус съдържа точка.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Град · радиус $radius км';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Държава · радиус $radius км';
+  }
 }

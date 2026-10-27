@@ -6701,4 +6701,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '« $name » a cessé d’attendre avant d’être autorisée. Rouvrez-la pour l’associer.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Régions de diffusion suggérées';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count zones. Les apps peuvent demander la plus proche dont le rayon contient un point.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Ville · rayon de $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Pays · rayon de $radius km';
+  }
 }

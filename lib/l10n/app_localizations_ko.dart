@@ -6377,4 +6377,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '“$name”이(가) 허용되기 전에 대기를 멈췄습니다. 다시 열어 페어링하세요.';
   }
+
+  @override
+  String get localApi_regionsTitle => '추천 플러드 지역';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count개 지역. 앱은 반경 안에 지점을 포함하는 가장 가까운 지역을 요청할 수 있습니다.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return '도시 · 반경 $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return '국가 · 반경 $radius km';
+  }
 }

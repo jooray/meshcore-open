@@ -3493,5 +3493,30 @@
         "type": "String"
       }
     }
+  },
+  "localApi_regionsTitle": "Föreslagna flood-regioner",
+  "localApi_regionsSubtitle": "{count} områden. Appar kan be om det närmaste vars radie innehåller en punkt.",
+  "@localApi_regionsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCity": "Stad · radie {radius} km",
+  "@localApi_regionCity": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCountry": "Land · radie {radius} km",
+  "@localApi_regionCountry": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
   }
 }

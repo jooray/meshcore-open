@@ -120,10 +120,12 @@ Before pairing completes, errors have no `id`:
 | `device.info` | — | `connected`, `name`, `pubkey`, `firmwareVerCode`, `batteryMv`, `batteryPercent`, `radio{freqHz,bwHz,sf,cr,txPowerDbm}`, `channels` |
 | `channels.list` | — | `{channels:[{index,name,isPublic,storageId}]}` |
 | `contacts.list` | `{limit?}` (1–500, default 200) | `{contacts:[{pubkey,name,type,lastSeen}]}` |
+| `regions.list` | — | suggested flood-scope areas: `{regions:[{name,label,kind,lat,lon,radiusKm}]}` |
+| `regions.resolve` | `{lat, lon}` | `{region:{…,distanceKm}}` or `{region:null}` |
 | `events.subscribe` | `{events?, channel?, dataTypes?, pubkeys?, since?}` | `{subscriptionId}` |
 | `events.unsubscribe` | `{subscriptionId}` | `{}` |
-| `channel.sendText` | `{channel, text}` | `{queued:true}` |
-| `channel.sendData` | `{channel, dataType, payload}` | `{queued:true}` |
+| `channel.sendText` | `{channel, text, region?}` | `{queued:true}` |
+| `channel.sendData` | `{channel, dataType, payload, region?}` | `{queued:true}` |
 | `direct.sendText` | `{pubkey, text}` | `{queued:true}` |
 | `advert.send` | `{flood?}` (default `true`) | `{queued:true}` |
 
@@ -131,6 +133,13 @@ Before pairing completes, errors have no `id`:
 `events.subscribe` it may also be the slot number as an integer. Names are matched
 case-sensitively against `channels.list`; an unknown or ambiguous name is an error. `text` is
 1–2000 characters. `payload` is base64 of 1–163 bytes. `dataType` is 1–65535.
+
+`region` overrides the channel's flood scope for this one message; without it the channel's own
+region (or the app default) applies, as for messages sent from the chat screen. It must be a name
+from `regions.list` or a region the user saved in the app (**Settings → Regions**). Any other name
+is refused, so a typo cannot send a flood that no repeater forwards: `unknown_region` for a
+well-formed name (lowercase letters, digits and `-`, up to 30 characters), `bad_request` for
+anything else, including names starting with `!`.
 
 ### Events
 
@@ -193,7 +202,8 @@ deduplicate.
 | `unknown_method` | No such method |
 | `not_connected` | The radio is not connected |
 | `unsupported_firmware` | The radio firmware cannot send channel data (needs firmware ver 11) |
-| `unknown_channel`, `ambiguous_channel`, `unknown_contact` | Lookup failed |
+| `unknown_channel`, `ambiguous_channel`, `unknown_contact`, `unknown_region` | Lookup failed |
+| `coordinate_range` | `lat` outside ±90 or `lon` outside ±180 |
 | `payload_too_large` | Payload over 163 bytes |
 | `invalid_data_type` | A `dataType` outside 1–65535 |
 | `radio_error` | The radio refused the command or did not answer |
@@ -202,6 +212,17 @@ deduplicate.
 Close codes: 1001 server stopping, 1003 binary frame, 1009 message too big, 4001 handshake out of
 order or timed out, 4003 rejected key, signature or pairing, or `revoked`, 4013 slow consumer or
 too many clients. (4013 stands in for 1013, which `dart:io` will not send.)
+
+## Regions and the static map
+
+The app ships a small, editable catalogue (`assets/mesh_regions.json`) of flood-scope areas:
+name, label, centre and radius. `regions.resolve` picks the **nearest centre whose circle contains
+the point**; a city entry beats the country fallback because it is nearer, not because of its kind.
+For a point at 48.15, 17.11 that is `sk-ba` (Bratislava, 100 km) rather than `sk` (Slovakia,
+350 km). The names are suggestions: a community must configure its repeaters with the same names.
+
+A client that wants less airtime than the whole country resolves the position once and sends
+with `region:"sk-ba"`; the app does not guess.
 
 ## Limits
 

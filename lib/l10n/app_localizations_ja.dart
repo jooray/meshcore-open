@@ -6368,4 +6368,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '「$name」は許可される前に待機をやめました。もう一度開いてペアリングしてください。';
   }
+
+  @override
+  String get localApi_regionsTitle => 'おすすめのフラッド地域';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count 地域。アプリは地点を半径内に含む最寄りの地域を問い合わせできます。';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return '都市 · 半径 $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return '国 · 半径 $radius km';
+  }
 }

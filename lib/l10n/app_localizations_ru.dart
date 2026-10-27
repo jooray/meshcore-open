@@ -6693,4 +6693,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '«$name» перестало ждать до получения разрешения. Откройте его снова для сопряжения.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Рекомендуемые регионы рассылки';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return 'Областей: $count. Приложения могут запросить ближайшую, радиус которой содержит точку.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Город · радиус $radius км';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Страна · радиус $radius км';
+  }
 }

@@ -6706,4 +6706,22 @@ class AppLocalizationsPl extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name” przestała czekać, zanim została dopuszczona. Otwórz ją ponownie, aby sparować.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Sugerowane regiony rozgłaszania';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return 'Obszary: $count. Aplikacje mogą zapytać o najbliższy obszar, którego promień obejmuje punkt.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Miasto · promień $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Kraj · promień $radius km';
+  }
 }

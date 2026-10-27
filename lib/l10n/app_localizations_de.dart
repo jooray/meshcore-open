@@ -6688,4 +6688,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ hat nicht mehr gewartet, bevor sie erlaubt wurde. Öffne sie erneut zum Koppeln.';
   }
+
+  @override
+  String get localApi_regionsTitle => 'Vorgeschlagene Flood-Regionen';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count Gebiete. Apps können das nächste Gebiet abfragen, dessen Radius einen Punkt enthält.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Stadt · $radius km Radius';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Land · $radius km Radius';
+  }
 }
