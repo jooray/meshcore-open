@@ -3575,5 +3575,30 @@
     }
   },
   "localApi_pairNotificationTitle": "„{name}“ chce používať rádio",
-  "localApi_pairNotificationBody": "Otvorte MeshCore Open a povoľte alebo zamietnite to."
+  "localApi_pairNotificationBody": "Otvorte MeshCore Open a povoľte alebo zamietnite to.",
+  "localApi_regionsTitle": "Odporúčané regióny",
+  "localApi_regionsSubtitle": "{count} oblastí. Aplikácie si môžu vyžiadať najbližšiu, ktorej polomer obsahuje daný bod.",
+  "@localApi_regionsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCity": "Mesto · polomer {radius} km",
+  "@localApi_regionCity": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCountry": "Krajina · polomer {radius} km",
+  "@localApi_regionCountry": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  }
 }

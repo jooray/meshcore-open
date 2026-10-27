@@ -2871,5 +2871,30 @@
     }
   },
   "localApi_pairNotificationTitle": "«{name}» хочет использовать радио",
-  "localApi_pairNotificationBody": "Откройте MeshCore Open, чтобы разрешить или запретить."
+  "localApi_pairNotificationBody": "Откройте MeshCore Open, чтобы разрешить или запретить.",
+  "localApi_regionsTitle": "Рекомендуемые регионы рассылки",
+  "localApi_regionsSubtitle": "Областей: {count}. Приложения могут запросить ближайшую, радиус которой содержит точку.",
+  "@localApi_regionsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCity": "Город · радиус {radius} км",
+  "@localApi_regionCity": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCountry": "Страна · радиус {radius} км",
+  "@localApi_regionCountry": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  }
 }

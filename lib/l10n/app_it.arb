@@ -3708,5 +3708,30 @@
     }
   },
   "localApi_pairNotificationTitle": "“{name}” vuole usare la radio",
-  "localApi_pairNotificationBody": "Apri MeshCore Open per consentirlo o negarlo."
+  "localApi_pairNotificationBody": "Apri MeshCore Open per consentirlo o negarlo.",
+  "localApi_regionsTitle": "Regioni di flood suggerite",
+  "localApi_regionsSubtitle": "{count} aree. Le app possono chiedere la più vicina il cui raggio contiene un punto.",
+  "@localApi_regionsSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCity": "Città · raggio {radius} km",
+  "@localApi_regionCity": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  },
+  "localApi_regionCountry": "Paese · raggio {radius} km",
+  "@localApi_regionCountry": {
+    "placeholders": {
+      "radius": {
+        "type": "int"
+      }
+    }
+  }
 }

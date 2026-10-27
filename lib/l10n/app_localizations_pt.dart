@@ -6929,4 +6929,22 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get localApi_pairNotificationBody =>
       'Abra o MeshCore Open para permitir ou recusar.';
+
+  @override
+  String get localApi_regionsTitle => 'Regiões de difusão sugeridas';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count áreas. As apps podem pedir a mais próxima cujo raio contém um ponto.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Cidade · raio de $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'País · raio de $radius km';
+  }
 }

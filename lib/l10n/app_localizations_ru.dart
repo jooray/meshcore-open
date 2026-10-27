@@ -6949,4 +6949,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get localApi_pairNotificationBody =>
       'Откройте MeshCore Open, чтобы разрешить или запретить.';
+
+  @override
+  String get localApi_regionsTitle => 'Рекомендуемые регионы рассылки';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return 'Областей: $count. Приложения могут запросить ближайшую, радиус которой содержит точку.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Город · радиус $radius км';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Страна · радиус $radius км';
+  }
 }

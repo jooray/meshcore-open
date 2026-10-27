@@ -14,6 +14,7 @@ import 'local_api_archive.dart';
 import 'local_api_crypto.dart';
 import 'local_api_host.dart';
 import 'local_api_pairing.dart';
+import 'mesh_regions.dart';
 
 /// What the server enforces. The defaults are the documented limits; tests
 /// shrink some of them.
@@ -84,6 +85,7 @@ class LocalApiServer {
   final PairingStore pairingStore;
   final PairingBroker pairingBroker;
   final LocalApiArchive? archive;
+  final MeshRegionCatalog? regions;
   final LocalApiLimits limits;
   final int port;
 
@@ -97,6 +99,7 @@ class LocalApiServer {
     required this.pairingStore,
     PairingBroker? pairingBroker,
     this.archive,
+    this.regions,
     this.limits = const LocalApiLimits(),
     this.port = defaultPort,
   }) : pairingBroker = pairingBroker ?? PairingBroker();
@@ -494,6 +497,34 @@ class _ApiClient {
         return {...info, 'channels': server.host.channels()};
       case 'channels.list':
         return {'channels': server.host.channels()};
+      case 'regions.list':
+        return {'regions': server.regions?.toJson() ?? const []};
+      case 'regions.resolve':
+        final latitude = params['lat'];
+        final longitude = params['lon'];
+        if (latitude is! num || longitude is! num) {
+          throw _ApiError('bad_request', 'lat and lon are required');
+        }
+        if (latitude.abs() > 90 || longitude.abs() > 180) {
+          throw _ApiError('coordinate_range', 'lat/lon out of range');
+        }
+        final region = server.regions?.resolve(
+          latitude.toDouble(),
+          longitude.toDouble(),
+        );
+        return {
+          'region': region == null
+              ? null
+              : {
+                  ...region.toJson(),
+                  'distanceKm': distanceKmBetween(
+                    latitude.toDouble(),
+                    longitude.toDouble(),
+                    region.latitude,
+                    region.longitude,
+                  ),
+                },
+        };
       case 'contacts.list':
         final limit = _intParam(params, 'limit', fallback: 200);
         return {'contacts': server.host.contacts(limit: limit.clamp(1, 500))};
@@ -506,7 +537,10 @@ class _ApiClient {
       case 'channel.sendText':
         final channel = _channelParam(params);
         final text = _textParam(params, 'text');
-        return _send(() => server.host.sendChannelText(channel, text));
+        final region = _regionParam(params);
+        return _send(
+          () => server.host.sendChannelText(channel, text, region: region),
+        );
       case 'channel.sendData':
         final channel = _channelParam(params);
         final dataType = _intParam(params, 'dataType');
@@ -521,6 +555,7 @@ class _ApiClient {
                 '${LocalApiServer.maxPayloadBytes}',
           );
         }
+        final region = _regionParam(params);
         if (server.host.isConnected && !server.host.supportsChannelData) {
           throw _ApiError(
             'unsupported_firmware',
@@ -532,6 +567,7 @@ class _ApiClient {
             channel,
             dataType,
             payload,
+            region: region,
           );
           if (!sent) {
             throw _ApiError('not_connected', 'the radio is not connected');
@@ -742,6 +778,27 @@ class _ApiClient {
       return DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true);
     }
     throw _ApiError('bad_request', 'since must be ISO-8601 or epoch time');
+  }
+
+  static final RegExp _regionName = RegExp(r'^[a-z0-9-]{1,30}$');
+
+  /// A flood-scope name from the region catalogue or the app's saved regions.
+  /// Anything else is refused: the radio would hash any string into a scope
+  /// no repeater serves, and names starting with `!` are internal.
+  String? _regionParam(Map<String, dynamic> params) {
+    final raw = params['region'];
+    if (raw == null) return null;
+    if (raw is! String || raw.isEmpty || raw.startsWith('!')) {
+      throw _ApiError('bad_request', 'region must be a region name');
+    }
+    if (server.host.savedRegions().contains(raw) ||
+        (server.regions?.contains(raw) ?? false)) {
+      return raw;
+    }
+    if (!_regionName.hasMatch(raw)) {
+      throw _ApiError('bad_request', 'region must be a region name');
+    }
+    throw _ApiError('unknown_region', 'no region named $raw');
   }
 
   List<T> _listParam<T>(Map<String, dynamic> params, String name) {

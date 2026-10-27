@@ -6463,4 +6463,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get localApi_pairNotificationBody => '打开 MeshCore Open 以允许或拒绝。';
+
+  @override
+  String get localApi_regionsTitle => '建议的泛洪区域';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count 个区域。应用可以查询半径包含某个点的最近区域。';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return '城市 · 半径 $radius 公里';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return '国家 · 半径 $radius 公里';
+  }
 }

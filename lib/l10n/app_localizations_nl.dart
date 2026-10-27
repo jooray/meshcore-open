@@ -6898,4 +6898,22 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get localApi_pairNotificationBody =>
       'Open MeshCore Open om het toe te staan of te weigeren.';
+
+  @override
+  String get localApi_regionsTitle => 'Voorgestelde flood-regio’s';
+
+  @override
+  String localApi_regionsSubtitle(int count) {
+    return '$count gebieden. Apps kunnen het dichtstbijzijnde gebied opvragen waarvan de straal een punt bevat.';
+  }
+
+  @override
+  String localApi_regionCity(int radius) {
+    return 'Stad · straal $radius km';
+  }
+
+  @override
+  String localApi_regionCountry(int radius) {
+    return 'Land · straal $radius km';
+  }
 }
