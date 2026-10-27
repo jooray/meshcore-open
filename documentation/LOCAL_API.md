@@ -127,6 +127,18 @@ dataTypes:[46674]` receives only road-event datagrams on that channel. Omitting 
 can avoid echoing its own traffic. Delivery is never acknowledged by the radio; `queued` only
 means the firmware accepted the packet.
 
+### History and replay
+
+The radio queues channel text *and* channel data while no phone is connected, and drains that
+queue destructively when this app connects. To let an app that starts later still see it,
+`events.subscribe` accepts `since` (ISO-8601 or epoch): matching archived channel data is sent as
+normal `event` frames after the subscription ack, with the original `receivedAt`.
+
+Only what some app is interested in is kept: a subscription records `(channel, dataType)` for the
+paired client, interests survive restarts, and nothing is archived for channels/types no paired
+app ever asked for. The archive is bounded (200 frames / 24 h), can be cleared in Settings, and a
+revoked app's interests are forgotten with it.
+
 ### Errors
 
 `unauthorized`, `bad_request`, `unknown_method`, `not_connected`, `unsupported_firmware`,

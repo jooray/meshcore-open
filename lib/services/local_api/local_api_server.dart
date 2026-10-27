@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import '../../models/channel.dart';
 import '../../models/mesh_event.dart';
+import 'local_api_archive.dart';
 import 'local_api_crypto.dart';
 import 'local_api_pairing.dart';
 import '../../utils/app_logger.dart';
@@ -33,6 +34,7 @@ class LocalApiServer {
   final LocalApiHost host;
   final PairingStore pairingStore;
   final PairingBroker pairingBroker;
+  final LocalApiArchive? archive;
   final int port;
 
   HttpServer? _server;
@@ -43,6 +45,7 @@ class LocalApiServer {
     required this.host,
     required this.pairingStore,
     PairingBroker? pairingBroker,
+    this.archive,
     this.port = defaultPort,
   }) : pairingBroker = pairingBroker ?? PairingBroker();
 
@@ -134,6 +137,7 @@ class _ApiClient {
   final List<DateTime> _sendTimes = [];
   Timer? _helloTimeout;
   _Handshake? _handshake;
+  String? _publicKey;
   bool _authenticated = false;
   bool _closed = false;
   int _queued = 0;
@@ -352,6 +356,7 @@ class _ApiClient {
     }
 
     _authenticated = true;
+    _publicKey = handshake.publicKey;
     _helloTimeout?.cancel();
     _handshake = null;
     _sendHelloOk(handshake);
@@ -555,6 +560,51 @@ class _ApiClient {
       dataTypes: dataTypeFilter.toSet(),
       pubkeys: pubkeyFilter.toSet(),
     );
+
+    final archive = server.archive;
+    if (archive != null && types.contains('channel.data')) {
+      final resolvedName =
+          channelName ??
+          (channelIndex == null
+              ? null
+              : server.host.channels().firstWhere(
+                      (channel) => channel['index'] == channelIndex,
+                      orElse: () => const {},
+                    )['name']
+                    as String?);
+      final key = _publicKey;
+      if (key != null && resolvedName != null) {
+        archive.noteInterest(key, resolvedName, dataTypeFilter);
+      }
+      final since = _parseSince(params['since']);
+      if (since != null) {
+        final replay = archive.replay(
+          channel: resolvedName,
+          dataTypes: dataTypeFilter.toSet(),
+          since: since,
+        );
+        // Send the ack first, then the replay.
+        scheduleMicrotask(() {
+          for (final item in replay) {
+            _enqueue({
+              'type': 'event',
+              'subscriptionId': subscriptionId,
+              'event': _encodeEvent(
+                ChannelDataEvent(
+                  channelIndex: channelIndex ?? -1,
+                  channelName: item.channel,
+                  dataType: item.dataType,
+                  payload: item.payload,
+                  snrRaw: (item.snrDb * 4).round(),
+                  outgoing: false,
+                  receivedAt: item.receivedAt,
+                ),
+              ),
+            });
+          }
+        });
+      }
+    }
     return {'subscriptionId': subscriptionId};
   }
 
@@ -617,6 +667,18 @@ class _ApiClient {
           'receivedAt': event.receivedAt.toUtc().toIso8601String(),
         };
     }
+  }
+
+  DateTime? _parseSince(Object? value) {
+    if (value == null) return null;
+    if (value is String) return DateTime.tryParse(value)?.toUtc();
+    if (value is num) {
+      final millis = value > 100000000000
+          ? value.toInt()
+          : value.toInt() * 1000;
+      return DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true);
+    }
+    return null;
   }
 
   void _spendSendQuota() {
