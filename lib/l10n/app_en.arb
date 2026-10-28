@@ -3795,5 +3795,14 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "“{name}” wants to use the radio",
+  "@localApi_pairNotificationTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "localApi_pairNotificationBody": "Open MeshCore Open to allow or deny it."
 }

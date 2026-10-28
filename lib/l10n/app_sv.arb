@@ -3567,5 +3567,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "”{name}” vill använda radion",
+  "localApi_pairNotificationBody": "Öppna MeshCore Open för att tillåta eller neka."
 }

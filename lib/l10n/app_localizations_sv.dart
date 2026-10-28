@@ -6866,4 +6866,13 @@ class AppLocalizationsSv extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '”$name” slutade vänta innan den tilläts. Öppna den igen för att parkoppla.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '”$name” vill använda radion';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Öppna MeshCore Open för att tillåta eller neka.';
 }

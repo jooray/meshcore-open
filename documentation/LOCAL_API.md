@@ -62,7 +62,9 @@ identity to this app.
    or the raw 64-byte `r||s`. The challenge's `message` field holds the same string.
 4. A key seen for the first time opens a dialog: **“Allow *Roadbeacon* to connect?”** with the key
    fingerprint. On Allow the key is stored and the connection continues; on Deny, or after two
-   minutes without an answer, the connection is closed. A paired key never prompts.
+   minutes without an answer, the connection is closed. A paired key never prompts. If MeshCore
+   Open is in the background, a notification says which app is asking; tapping it brings up the
+   dialog. The client must keep its connection open meanwhile: disconnecting withdraws the request.
 5. Paired apps are listed in **Settings → Local API**. Removing one forgets its key, closes its
    open connections (4003, reason `revoked`) and drops the channel data kept for it; its next
    connection asks again.
