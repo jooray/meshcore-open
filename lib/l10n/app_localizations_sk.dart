@@ -6660,4 +6660,13 @@ class AppLocalizationsSk extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ prestala čakať skôr, než bola povolená. Otvorte ju znova a spárujte.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '„$name“ chce používať rádio';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Otvorte MeshCore Open a povoľte alebo zamietnite to.';
 }

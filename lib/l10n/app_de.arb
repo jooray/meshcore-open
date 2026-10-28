@@ -3633,5 +3633,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "„{name}“ möchte das Funkgerät nutzen",
+  "localApi_pairNotificationBody": "Öffne MeshCore Open, um es zu erlauben oder abzulehnen."
 }

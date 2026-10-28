@@ -3537,5 +3537,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "A(z) „{name}” használni szeretné a rádiót",
+  "localApi_pairNotificationBody": "Nyisd meg a MeshCore Opent az engedélyezéshez vagy elutasításhoz."
 }

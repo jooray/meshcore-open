@@ -6368,4 +6368,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '「$name」は許可される前に待機をやめました。もう一度開いてペアリングしてください。';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '「$name」が無線機の使用を求めています';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'MeshCore Open を開いて許可または拒否してください。';
 }

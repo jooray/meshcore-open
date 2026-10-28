@@ -3503,5 +3503,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "“{name}”想要使用无线电",
+  "localApi_pairNotificationBody": "打开 MeshCore Open 以允许或拒绝。"
 }

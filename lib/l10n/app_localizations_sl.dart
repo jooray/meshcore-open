@@ -6646,4 +6646,13 @@ class AppLocalizationsSl extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '»$name« je nehala čakati, preden je bila dovoljena. Odprite jo znova za seznanitev.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '»$name« želi uporabljati radio';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Odprite MeshCore Open, da to dovolite ali zavrnete.';
 }

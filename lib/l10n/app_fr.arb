@@ -3632,5 +3632,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "« {name} » veut utiliser la radio",
+  "localApi_pairNotificationBody": "Ouvrez MeshCore Open pour l’autoriser ou le refuser."
 }

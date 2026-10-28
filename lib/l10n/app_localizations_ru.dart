@@ -6693,4 +6693,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '«$name» перестало ждать до получения разрешения. Откройте его снова для сопряжения.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '«$name» хочет использовать радио';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Откройте MeshCore Open, чтобы разрешить или запретить.';
 }

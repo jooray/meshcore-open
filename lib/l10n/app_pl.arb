@@ -3531,5 +3531,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "„{name}” chce używać radia",
+  "localApi_pairNotificationBody": "Otwórz MeshCore Open, aby zezwolić lub odmówić."
 }

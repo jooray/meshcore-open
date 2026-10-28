@@ -11178,6 +11178,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'“{name}” stopped waiting before it was allowed. Open it again to pair.'**
   String localApi_pairExpired(String name);
+
+  /// No description provided for @localApi_pairNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'“{name}” wants to use the radio'**
+  String localApi_pairNotificationTitle(String name);
+
+  /// No description provided for @localApi_pairNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open MeshCore Open to allow or deny it.'**
+  String get localApi_pairNotificationBody;
 }
 
 class _AppLocalizationsDelegate

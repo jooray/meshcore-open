@@ -6688,4 +6688,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ hat nicht mehr gewartet, bevor sie erlaubt wurde. Öffne sie erneut zum Koppeln.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '„$name“ möchte das Funkgerät nutzen';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Öffne MeshCore Open, um es zu erlauben oder abzulehnen.';
 }

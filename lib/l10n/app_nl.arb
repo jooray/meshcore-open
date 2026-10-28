@@ -3399,5 +3399,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "“{name}” wil de radio gebruiken",
+  "localApi_pairNotificationBody": "Open MeshCore Open om het toe te staan of te weigeren."
 }

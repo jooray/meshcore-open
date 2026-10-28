@@ -6706,4 +6706,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name” przestała czekać, zanim została dopuszczona. Otwórz ją ponownie, aby sparować.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '„$name” chce używać radia';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Otwórz MeshCore Open, aby zezwolić lub odmówić.';
 }

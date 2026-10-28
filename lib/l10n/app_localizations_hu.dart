@@ -6666,4 +6666,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return 'A(z) „$name” abbahagyta a várakozást, mielőtt engedélyt kapott. Nyisd meg újra a párosításhoz.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return 'A(z) „$name” használni szeretné a rádiót';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Nyisd meg a MeshCore Opent az engedélyezéshez vagy elutasításhoz.';
 }

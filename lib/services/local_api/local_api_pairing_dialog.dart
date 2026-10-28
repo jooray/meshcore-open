@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../l10n/l10n.dart';
+import '../notification_service.dart';
 import 'local_api_pairing.dart';
 import 'local_api_service.dart';
 
@@ -10,7 +11,9 @@ import 'local_api_service.dart';
 ///
 /// Wraps the app so the dialog can appear over any screen. Nothing is granted
 /// silently: an unanswered request times out and is denied, and its dialog
-/// closes when the request ends without an answer.
+/// closes when the request ends without an answer. A request that arrives
+/// while the app is in the background also posts a notification, since the
+/// dialog cannot be seen until the user comes back.
 class LocalApiPairingHost extends StatefulWidget {
   final Widget child;
 
@@ -20,7 +23,8 @@ class LocalApiPairingHost extends StatefulWidget {
   State<LocalApiPairingHost> createState() => _LocalApiPairingHostState();
 }
 
-class _LocalApiPairingHostState extends State<LocalApiPairingHost> {
+class _LocalApiPairingHostState extends State<LocalApiPairingHost>
+    with WidgetsBindingObserver {
   final List<StreamSubscription<Object>> _subscriptions = [];
   final List<PairingRequest> _queue = [];
   PairingRequest? _showing;
@@ -31,6 +35,7 @@ class _LocalApiPairingHostState extends State<LocalApiPairingHost> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     final broker = _broker;
     if (broker != null) {
       _subscriptions
@@ -41,19 +46,41 @@ class _LocalApiPairingHostState extends State<LocalApiPairingHost> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     for (final subscription in _subscriptions) {
       subscription.cancel();
     }
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Back in front: the dialog is visible, the notification has done its job.
+    if (state == AppLifecycleState.resumed) _clearNotification();
+  }
+
+  bool get _inBackground {
+    final state = WidgetsBinding.instance.lifecycleState;
+    return state != null && state != AppLifecycleState.resumed;
+  }
+
+  void _clearNotification() {
+    unawaited(NotificationService().clearLocalApiPairingRequest());
+  }
+
   void _enqueue(PairingRequest request) {
     _queue.add(request);
+    if (_inBackground) {
+      unawaited(NotificationService().showLocalApiPairingRequest(request.name));
+    }
     unawaited(_showNext());
   }
 
   void _onCancelled(String id) {
     _queue.removeWhere((request) => request.id == id);
+    if (_queue.isEmpty && (_showing == null || _showing?.id == id)) {
+      _clearNotification();
+    }
     final dialogContext = _dialogContext;
     if (_showing?.id == id &&
         dialogContext != null &&
@@ -111,6 +138,7 @@ class _LocalApiPairingHostState extends State<LocalApiPairingHost> {
     );
     _dialogContext = null;
     _showing = null;
+    if (_queue.isEmpty) _clearNotification();
     final answered = _broker?.resolve(request.id, allowed ?? false) ?? false;
     if (allowed == true && !answered && mounted) {
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(

@@ -3498,5 +3498,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "„{name}“ иска да използва радиото",
+  "localApi_pairNotificationBody": "Отворете MeshCore Open, за да го разрешите или откажете."
 }

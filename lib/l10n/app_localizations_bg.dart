@@ -6680,4 +6680,13 @@ class AppLocalizationsBg extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '„$name“ спря да чака, преди да бъде разрешено. Отворете го отново, за да го сдвоите.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '„$name“ иска да използва радиото';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Отворете MeshCore Open, за да го разрешите или откажете.';
 }

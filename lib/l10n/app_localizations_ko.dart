@@ -6377,4 +6377,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '“$name”이(가) 허용되기 전에 대기를 멈췄습니다. 다시 열어 페어링하세요.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '“$name”이(가) 무전기를 사용하려고 합니다';
+  }
+
+  @override
+  String get localApi_pairNotificationBody => 'MeshCore Open을 열어 허용하거나 거부하세요.';
 }

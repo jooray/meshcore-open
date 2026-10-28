@@ -3632,5 +3632,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "「{name}」が無線機の使用を求めています",
+  "localApi_pairNotificationBody": "MeshCore Open を開いて許可または拒否してください。"
 }

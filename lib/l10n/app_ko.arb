@@ -3632,5 +3632,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "localApi_pairNotificationTitle": "“{name}”이(가) 무전기를 사용하려고 합니다",
+  "localApi_pairNotificationBody": "MeshCore Open을 열어 허용하거나 거부하세요."
 }

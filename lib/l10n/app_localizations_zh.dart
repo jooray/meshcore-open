@@ -6218,4 +6218,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '“$name”在获得允许前已停止等待。请重新打开它以进行配对。';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '“$name”想要使用无线电';
+  }
+
+  @override
+  String get localApi_pairNotificationBody => '打开 MeshCore Open 以允许或拒绝。';
 }

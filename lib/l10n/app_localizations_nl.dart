@@ -6639,4 +6639,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String localApi_pairExpired(String name) {
     return '‘$name’ wachtte niet meer voordat hij werd toegestaan. Open hem opnieuw om te koppelen.';
   }
+
+  @override
+  String localApi_pairNotificationTitle(String name) {
+    return '“$name” wil de radio gebruiken';
+  }
+
+  @override
+  String get localApi_pairNotificationBody =>
+      'Open MeshCore Open om het toe te staan of te weigeren.';
 }
