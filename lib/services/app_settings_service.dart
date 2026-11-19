@@ -462,6 +462,10 @@ class AppSettingsService extends ChangeNotifier {
     appLogger.setEnabled(value);
   }
 
+  Future<void> setAutoConnectOnStart(bool value) async {
+    await updateSettings(_settings.copyWith(autoConnectOnStart: value));
+  }
+
   Future<void> setMapShowDiscoveryContacts(bool value) async {
     await updateSettings(_settings.copyWith(mapShowDiscoveryContacts: value));
   }
