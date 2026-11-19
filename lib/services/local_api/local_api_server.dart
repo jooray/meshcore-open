@@ -78,6 +78,11 @@ class LocalApiServer {
   static const int protocolVersion = 1;
   static const int defaultPort = 8787;
   static const int maxPayloadBytes = kMaxChannelDataPayload;
+
+  /// `hello.capabilities`: optional features a client must see before it uses
+  /// them, since an older server ignores unknown fields. Names as meshcored
+  /// reports them. `tx_path_data`: `channel.sendData` takes `path`.
+  static const List<String> capabilities = ['tx_path_data'];
   static const String pairingMessagePrefix = 'meshcore-open-pair-v1:';
   static const String _webSocketGuid = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 
@@ -488,6 +493,7 @@ class _ApiClient {
       'device': server.deviceSummary(),
       'eventTypes': _Subscription.eventTypes,
       'limits': _limits.toJson(),
+      'capabilities': LocalApiServer.capabilities,
     });
     // hello already says this; push only what changes from here on.
     _lastDevice = jsonEncode(_deviceMessage());
@@ -585,6 +591,9 @@ class _ApiClient {
         final channel = _channelParam(params);
         final text = _textParam(params, 'text');
         final region = _regionParam(params);
+        // Text along a path is not offered (no `tx_path_text`): refuse it
+        // instead of flooding what the client meant to keep local.
+        _pathParam(params, supported: false);
         return _send(
           () => server.host.sendChannelText(channel, text, region: region),
         );
@@ -603,6 +612,7 @@ class _ApiClient {
           );
         }
         final region = _regionParam(params);
+        final path = _pathParam(params, supported: true);
         if (server.host.isConnected && !server.host.supportsChannelData) {
           throw _ApiError(
             'unsupported_firmware',
@@ -615,6 +625,7 @@ class _ApiClient {
             dataType,
             payload,
             region: region,
+            path: path,
           );
           if (!sent) {
             throw _ApiError('not_connected', 'the radio is not connected');
@@ -911,6 +922,55 @@ class _ApiClient {
       throw _ApiError('bad_request', 'region must be a region name');
     }
     throw _ApiError('unknown_region', 'no region named $raw');
+  }
+
+  static final RegExp _hex = RegExp(r'^(?:[0-9a-fA-F]{2})*$');
+
+  /// `path` (hex hop hashes in send order) and `pathHashSize` (1–3, default
+  /// 1), as meshcored takes them. Absent or null: flood. `""`: zero-hop.
+  ChannelDataPath? _pathParam(
+    Map<String, dynamic> params, {
+    required bool supported,
+  }) {
+    final raw = params['path'];
+    if (raw == null) return null;
+    if (raw is! String) {
+      throw _ApiError('bad_request', 'path must be a hex string');
+    }
+    if (!supported) {
+      throw _ApiError(
+        'unsupported',
+        'this radio cannot send along an explicit path',
+      );
+    }
+    if (!_hex.hasMatch(raw)) {
+      throw _ApiError('bad_request', 'path must be a hex string');
+    }
+    final bytes = Uint8List(raw.length ~/ 2);
+    for (var i = 0; i < bytes.length; i++) {
+      bytes[i] = int.parse(raw.substring(i * 2, i * 2 + 2), radix: 16);
+    }
+    final sizeRaw = params['pathHashSize'];
+    final int hashSize;
+    if (sizeRaw == null) {
+      hashSize = 1;
+    } else if (sizeRaw is int && sizeRaw >= 1 && sizeRaw <= 3) {
+      hashSize = sizeRaw;
+    } else {
+      throw _ApiError('bad_request', 'pathHashSize must be 1, 2 or 3');
+    }
+    if (bytes.length % hashSize != 0) {
+      throw _ApiError('bad_request', 'path length does not match pathHashSize');
+    }
+    if (bytes.length ~/ hashSize > ChannelDataPath.maxHops ||
+        bytes.length > ChannelDataPath.maxBytes) {
+      throw _ApiError(
+        'bad_request',
+        'path is too long: at most ${ChannelDataPath.maxHops} hops and '
+            '${ChannelDataPath.maxBytes} bytes',
+      );
+    }
+    return ChannelDataPath(bytes, hashSize: hashSize);
   }
 
   List<T> _listParam<T>(Map<String, dynamic> params, String name) {

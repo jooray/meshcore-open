@@ -101,7 +101,7 @@ Server-initiated events have `type: "event"`. Unknown fields in requests are ign
 
 ```json
 {"type":"pairing.challenge","protocol":1,"nonce":"…","fingerprint":"AB12 CD34 5678 9ABC","message":"meshcore-open-pair-v1:…"}
-{"type":"hello","protocol":1,"client":{"name":"Roadbeacon","fingerprint":"…"},"device":{"name":"…","pubkey":"…","firmwareVerCode":11,"connected":true},"eventTypes":["channel.text","channel.data","direct.text","advert"],"limits":{…}}
+{"type":"hello","protocol":1,"client":{"name":"Roadbeacon","fingerprint":"…"},"device":{"name":"…","pubkey":"…","firmwareVerCode":11,"connected":true},"eventTypes":["channel.text","channel.data","direct.text","advert"],"limits":{…},"capabilities":["tx_path_data"]}
 {"id":1,"ok":true,"result":{"connected":true,"name":"…","batteryMv":4012,"radio":{"freqHz":869525000,"bwHz":250000,"sf":11,"cr":5,"txPowerDbm":22},"channels":[{"index":0,"name":"#roadstr","isPublic":false,"storageId":"…"}]}}
 {"id":2,"ok":true,"result":{"subscriptionId":"s1"}}
 {"type":"event","subscriptionId":"s1","event":{"type":"channel.data","channel":"#roadstr","channelIndex":0,"dataType":336,"payload":"<base64>","snrDb":-7.25,"hops":2,"receivedAt":"2026-10-26T12:00:00.000Z","outgoing":false}}
@@ -119,6 +119,10 @@ Before pairing completes, errors have no `id`:
 `limits` in `hello` reports `maxPayloadBytes`, `maxMessageBytes`, `maxQueuedBytes`,
 `sendsPerMinute`, `minSendGapMs`, `maxSubscriptions` and `maxFilterEntries`.
 
+`capabilities` in `hello` lists optional features by name, the same names meshcored uses. A
+client checks it before using one, because a server without the feature ignores the unknown
+field (see [Paths](#paths)). This server reports `tx_path_data`.
+
 ### Methods (v1)
 
 | Method | Params | Result |
@@ -131,7 +135,7 @@ Before pairing completes, errors have no `id`:
 | `events.subscribe` | `{events?, channel?, dataTypes?, pubkeys?, since?}` | `{subscriptionId}` |
 | `events.unsubscribe` | `{subscriptionId}` | `{}` |
 | `channel.sendText` | `{channel, text, region?}` | `{queued:true}` |
-| `channel.sendData` | `{channel, dataType, payload, region?}` | `{queued:true}` |
+| `channel.sendData` | `{channel, dataType, payload, region?, path?, pathHashSize?}` | `{queued:true}` |
 | `direct.sendText` | `{pubkey, text}` | `{queued:true}` |
 | `advert.send` | `{flood?}` (default `true`) | `{queued:true}` |
 | `channels.join` | `{name}` (a hashtag channel, `#` + 1–31 of `a-z`, `0-9`, `-`) | `{index, name, created}` |
@@ -147,6 +151,23 @@ from `regions.list` or a region the user saved in the app (**Settings → Region
 is refused, so a typo cannot send a flood that no repeater forwards: `unknown_region` for a
 well-formed name (lowercase letters, digits and `-`, up to 30 characters), `bad_request` for
 anything else, including names starting with `!`.
+
+### Paths
+
+`channel.sendData` floods by default. With `path` it goes along an explicit route instead
+(`CMD_SEND_CHANNEL_DATA` with a path, firmware ver 11 and later):
+
+* `path`: hex, the hop hashes in the order the packet travels; `pathHashSize` (1, 2 or 3,
+  default 1) is the size of each hash. Missing or `null`: flood, as before.
+* `"path": ""` is **zero-hop**: only radios in range of this node hear it and no repeater
+  forwards it. Example: `{"channel":"#roadstr","dataType":336,"payload":"…","path":"","pathHashSize":1}`.
+* A non-empty path is a direct send. At most 63 hops and 64 bytes; the length must be a multiple
+  of `pathHashSize`. Anything else is `bad_request`, and nothing is sent.
+* `region` is still validated, but a flood scope does not change a direct or zero-hop packet.
+
+Only send `path` when `hello.capabilities` contains `tx_path_data`. An older server ignores the
+field and floods the packet. `channel.sendText` does not take a path here (no `tx_path_text`): a
+request with `path` is refused with `unsupported` instead of flooding.
 
 ### Events
 
@@ -238,6 +259,7 @@ deduplicate.
 | `unknown_method` | No such method |
 | `not_connected` | The radio is not connected |
 | `unsupported_firmware` | The radio firmware cannot send channel data (needs firmware ver 11) |
+| `unsupported` | A feature this server does not offer, e.g. `path` in `channel.sendText` |
 | `invalid_params` | `channels.join` with a name that is not a lowercase hashtag channel |
 | `denied` | The user did not add the channel, or did not answer within two minutes |
 | `no_free_slot` | The radio has no free channel slot |
