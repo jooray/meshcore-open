@@ -3237,6 +3237,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Verbindung",
+  "appSettings_autoConnectOnStart": "Beim Start verbinden",
+  "appSettings_autoConnectOnStartSubtitle": "Beim Start der App automatisch mit dem zuletzt verwendeten Funkgerät verbinden, außer Sie haben die Verbindung selbst getrennt",
+  "appSettings_keepConnected": "Im Hintergrund verbunden bleiben",
+  "appSettings_keepConnectedSubtitle": "Android startet MeshCore Open, sobald {name} in Reichweite ist, auch nach dem Schließen der App",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open bleibt im Hintergrund mit {name} verbunden",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Zuerst mit einem Bluetooth-Funkgerät verbinden",
+  "appSettings_keepConnectedNotFound": "{name} wurde nicht gefunden. Schalten Sie es ein, halten Sie es in der Nähe und versuchen Sie es erneut.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android konnte das nicht einrichten",
   "appSettings_batteryOptimization": "Hintergrundaktivität",
   "appSettings_batteryOptimizationSubtitle": "Setzen Sie MeshCore Open in den Akkueinstellungen auf „Nicht optimieren“, damit Nachrichten auch im Hintergrund ankommen",
   "contacts_storageFull": "Der Kontaktspeicher auf dem Knoten ist voll. Neue Knoten lassen sich erst wieder hinzufügen, wenn Kontakte entfernt wurden.",

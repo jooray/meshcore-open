@@ -1322,6 +1322,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appSettings_messageNotificationsSubtitle => '收到新消息时显示通知';
 
   @override
+  String get appSettings_connectionSection => '连接';
+
+  @override
+  String get appSettings_autoConnectOnStart => '启动时连接';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      '应用启动时自动连接上次使用的电台，除非你已手动断开';
+
+  @override
+  String get appSettings_keepConnected => '在后台保持连接';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return '即使关闭应用，$name 进入范围后 Android 也会启动 MeshCore Open';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open 会在后台保持与 $name 的连接';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio => '请先连接蓝牙电台';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '找不到 $name。请开机并靠近后重试。';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed => 'Android 无法完成设置';
+
+  @override
   String get appSettings_batteryOptimization => '后台活动';
 
   @override

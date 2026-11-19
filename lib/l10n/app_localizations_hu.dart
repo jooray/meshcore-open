@@ -1404,6 +1404,42 @@ class AppLocalizationsHu extends AppLocalizations {
       'Értesítés megjelenítése új üzenetek fogadásakor';
 
   @override
+  String get appSettings_connectionSection => 'Kapcsolat';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Csatlakozás indításkor';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Az alkalmazás indításakor csatlakozik az utolsó rádióhoz, kivéve ha Ön szakította meg a kapcsolatot';
+
+  @override
+  String get appSettings_keepConnected => 'Kapcsolat tartása a háttérben';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Az Android elindítja a MeshCore Open alkalmazást, amikor a(z) $name hatótávolságba kerül, az alkalmazás bezárása után is';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'A MeshCore Open a háttérben is kapcsolatban marad a(z) $name eszközzel';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Előbb csatlakozzon egy Bluetooth-rádióhoz';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return 'A(z) $name nem található. Kapcsolja be, tartsa közel, és próbálja újra.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'Az Android nem tudta beállítani';
+
+  @override
   String get appSettings_batteryOptimization => 'Háttérben futó tevékenység';
 
   @override

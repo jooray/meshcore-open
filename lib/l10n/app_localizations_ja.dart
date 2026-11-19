@@ -1342,6 +1342,40 @@ class AppLocalizationsJa extends AppLocalizations {
       '新しいメッセージを受信した際に、通知を表示する';
 
   @override
+  String get appSettings_connectionSection => '接続';
+
+  @override
+  String get appSettings_autoConnectOnStart => '起動時に接続';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'アプリの起動時に、前回接続した無線機へ自動で接続します。自分で切断した場合は接続しません';
+
+  @override
+  String get appSettings_keepConnected => 'バックグラウンドで接続を維持';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'アプリを閉じた後でも、$name が通信圏内に入ると Android が MeshCore Open を起動します';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open がバックグラウンドで $name との接続を維持します';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio => '先に Bluetooth 対応の無線機へ接続してください';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name が見つかりません。電源を入れて近くに置き、もう一度お試しください。';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed => 'Android で設定できませんでした';
+
+  @override
   String get appSettings_batteryOptimization => 'バックグラウンド動作';
 
   @override

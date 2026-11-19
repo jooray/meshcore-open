@@ -541,6 +541,36 @@
   "appSettings_notificationsDisabled": "Oznámení zakázána",
   "appSettings_messageNotifications": "Oznámení o zprávách",
   "appSettings_messageNotificationsSubtitle": "Zobrazit oznámení při příchozí nové zprávě",
+  "appSettings_connectionSection": "Připojení",
+  "appSettings_autoConnectOnStart": "Připojit při spuštění",
+  "appSettings_autoConnectOnStartSubtitle": "Po spuštění aplikace se připojí k poslednímu rádiu, pokud jste ho sami neodpojili",
+  "appSettings_keepConnected": "Zůstat připojen na pozadí",
+  "appSettings_keepConnectedSubtitle": "Android spustí MeshCore Open, když bude {name} v dosahu, i po zavření aplikace",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open zůstane na pozadí připojený k rádiu {name}",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Nejdřív se připojte k rádiu přes Bluetooth",
+  "appSettings_keepConnectedNotFound": "Rádio {name} se nenašlo. Zapněte ho, přibližte ho a zkuste to znovu.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android to nedokázal nastavit",
   "appSettings_batteryOptimization": "Aktivita na pozadí",
   "appSettings_batteryOptimizationSubtitle": "V nastavení baterie nastavte MeshCore Open na „Neoptimalizovat“, aby zprávy chodily i na pozadí",
   "appSettings_channelMessageNotifications": "Oznámení o zprávách kanálů",

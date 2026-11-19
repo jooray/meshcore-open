@@ -3135,6 +3135,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Połączenie",
+  "appSettings_autoConnectOnStart": "Łącz po uruchomieniu",
+  "appSettings_autoConnectOnStartSubtitle": "Po uruchomieniu aplikacji łączy się z ostatnim radiem, chyba że rozłączono je ręcznie",
+  "appSettings_keepConnected": "Utrzymuj połączenie w tle",
+  "appSettings_keepConnectedSubtitle": "Android uruchomi MeshCore Open, gdy {name} znajdzie się w zasięgu, także po zamknięciu aplikacji",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open pozostanie w tle połączony z {name}",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Najpierw połącz się z radiem Bluetooth",
+  "appSettings_keepConnectedNotFound": "Nie znaleziono urządzenia {name}. Włącz je, trzymaj blisko i spróbuj ponownie.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android nie mógł tego skonfigurować",
   "appSettings_batteryOptimization": "Działanie w tle",
   "appSettings_batteryOptimizationSubtitle": "Ustaw w ustawieniach baterii aplikacji MeshCore Open opcję „Nie optymalizuj”, aby wiadomości przychodziły w tle",
   "contacts_storageFull": "Pamięć kontaktów w węźle jest pełna. Nowe węzły nie mogą być dodane, dopóki nie usuniesz kontaktów.",

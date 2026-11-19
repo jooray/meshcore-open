@@ -1392,6 +1392,42 @@ class AppLocalizationsSv extends AppLocalizations {
       'Visa en notifiering när nya meddelanden tas emot';
 
   @override
+  String get appSettings_connectionSection => 'Anslutning';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Anslut vid start';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Ansluter till den senaste radion när appen startar, om du inte själv har kopplat från';
+
+  @override
+  String get appSettings_keepConnected => 'Håll anslutningen i bakgrunden';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android startar MeshCore Open när $name kommer inom räckvidd, även efter att appen har stängts';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open förblir ansluten till $name i bakgrunden';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Anslut först till en Bluetooth-radio';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name hittades inte. Slå på den, håll den nära och försök igen.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'Android kunde inte ställa in det';
+
+  @override
   String get appSettings_batteryOptimization => 'Bakgrundsaktivitet';
 
   @override

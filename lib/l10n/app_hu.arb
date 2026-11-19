@@ -3141,6 +3141,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Kapcsolat",
+  "appSettings_autoConnectOnStart": "Csatlakozás indításkor",
+  "appSettings_autoConnectOnStartSubtitle": "Az alkalmazás indításakor csatlakozik az utolsó rádióhoz, kivéve ha Ön szakította meg a kapcsolatot",
+  "appSettings_keepConnected": "Kapcsolat tartása a háttérben",
+  "appSettings_keepConnectedSubtitle": "Az Android elindítja a MeshCore Open alkalmazást, amikor a(z) {name} hatótávolságba kerül, az alkalmazás bezárása után is",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "A MeshCore Open a háttérben is kapcsolatban marad a(z) {name} eszközzel",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Előbb csatlakozzon egy Bluetooth-rádióhoz",
+  "appSettings_keepConnectedNotFound": "A(z) {name} nem található. Kapcsolja be, tartsa közel, és próbálja újra.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Az Android nem tudta beállítani",
   "appSettings_batteryOptimization": "Háttérben futó tevékenység",
   "appSettings_batteryOptimizationSubtitle": "Állítsa be a MeshCore Open alkalmazást az akkumulátorbeállításokban a „Ne optimalizálja” értékre, hogy az üzenetek a háttérben is érkezzenek",
   "contacts_storageFull": "A csomópont névjegytárhelye megtelt. Új csomópontokat nem lehet hozzáadni, amíg nem távolít el névjegyeket.",

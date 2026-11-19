@@ -1414,6 +1414,42 @@ class AppLocalizationsDe extends AppLocalizations {
       'Benachrichtigung anzeigen, wenn neue Direktnachrichten eingehen';
 
   @override
+  String get appSettings_connectionSection => 'Verbindung';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Beim Start verbinden';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Beim Start der App automatisch mit dem zuletzt verwendeten Funkgerät verbinden, außer Sie haben die Verbindung selbst getrennt';
+
+  @override
+  String get appSettings_keepConnected => 'Im Hintergrund verbunden bleiben';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android startet MeshCore Open, sobald $name in Reichweite ist, auch nach dem Schließen der App';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open bleibt im Hintergrund mit $name verbunden';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Zuerst mit einem Bluetooth-Funkgerät verbinden';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name wurde nicht gefunden. Schalten Sie es ein, halten Sie es in der Nähe und versuchen Sie es erneut.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'Android konnte das nicht einrichten';
+
+  @override
   String get appSettings_batteryOptimization => 'Hintergrundaktivität';
 
   @override

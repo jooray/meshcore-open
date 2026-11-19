@@ -1408,6 +1408,42 @@ class AppLocalizationsPt extends AppLocalizations {
       'Mostrar notificação ao receber novas mensagens';
 
   @override
+  String get appSettings_connectionSection => 'Conexão';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Conectar ao iniciar';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Ao abrir o app, conecta ao último rádio, a menos que você tenha desconectado';
+
+  @override
+  String get appSettings_keepConnected => 'Manter conectado em segundo plano';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'O Android abre o MeshCore Open quando $name estiver ao alcance, mesmo depois de fechar o app';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'O MeshCore Open continua conectado a $name em segundo plano';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Conecte-se primeiro a um rádio Bluetooth';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name não foi encontrado. Ligue, deixe por perto e tente novamente.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'O Android não conseguiu configurar isso';
+
+  @override
   String get appSettings_batteryOptimization => 'Atividade em segundo plano';
 
   @override
@@ -9089,6 +9125,42 @@ class AppLocalizationsPtPt extends AppLocalizationsPt {
   @override
   String get appSettings_messageNotificationsSubtitle =>
       'Mostrar notificação ao receber novas mensagens';
+
+  @override
+  String get appSettings_connectionSection => 'Ligação';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Ligar ao iniciar';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Ao abrir a app, liga ao último rádio, a menos que tenha terminado a ligação';
+
+  @override
+  String get appSettings_keepConnected => 'Manter ligado em segundo plano';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'O Android abre o MeshCore Open quando $name estiver ao alcance, mesmo depois de fechar a app';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'O MeshCore Open continua ligado a $name em segundo plano';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Ligue-se primeiro a um rádio Bluetooth';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name não foi encontrado. Ligue-o, mantenha-o por perto e tente novamente.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'O Android não conseguiu configurar isto';
 
   @override
   String get appSettings_batteryOptimization => 'Atividade em segundo plano';

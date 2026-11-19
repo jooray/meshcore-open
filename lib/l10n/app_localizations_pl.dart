@@ -1416,6 +1416,42 @@ class AppLocalizationsPl extends AppLocalizations {
       'Pokaż powiadomienie przy otrzymywaniu nowych wiadomości';
 
   @override
+  String get appSettings_connectionSection => 'Połączenie';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Łącz po uruchomieniu';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Po uruchomieniu aplikacji łączy się z ostatnim radiem, chyba że rozłączono je ręcznie';
+
+  @override
+  String get appSettings_keepConnected => 'Utrzymuj połączenie w tle';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android uruchomi MeshCore Open, gdy $name znajdzie się w zasięgu, także po zamknięciu aplikacji';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open pozostanie w tle połączony z $name';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Najpierw połącz się z radiem Bluetooth';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return 'Nie znaleziono urządzenia $name. Włącz je, trzymaj blisko i spróbuj ponownie.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'Android nie mógł tego skonfigurować';
+
+  @override
   String get appSettings_batteryOptimization => 'Działanie w tle';
 
   @override

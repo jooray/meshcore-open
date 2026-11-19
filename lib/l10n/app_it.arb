@@ -3131,6 +3131,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Connessione",
+  "appSettings_autoConnectOnStart": "Connetti all'avvio",
+  "appSettings_autoConnectOnStartSubtitle": "All'avvio dell'app si connette all'ultima radio, a meno che tu non l'abbia disconnessa",
+  "appSettings_keepConnected": "Resta connesso in background",
+  "appSettings_keepConnectedSubtitle": "Android avvia MeshCore Open quando {name} è nel raggio d'azione, anche dopo aver chiuso l'app",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open resta connesso a {name} in background",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Connettiti prima a una radio Bluetooth",
+  "appSettings_keepConnectedNotFound": "{name} non è stata trovata. Accendila, tienila vicina e riprova.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android non è riuscito a configurarlo",
   "appSettings_batteryOptimization": "Attività in background",
   "appSettings_batteryOptimizationSubtitle": "Imposta MeshCore Open su \"Non ottimizzare\" nelle impostazioni della batteria per continuare a ricevere i messaggi in background",
   "contacts_storageFull": "Lo spazio di archiviazione dei contatti sul nodo è pieno. Non si possono aggiungere nuovi nodi finché non vengono rimossi dei contatti.",

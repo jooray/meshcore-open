@@ -2987,6 +2987,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Anslutning",
+  "appSettings_autoConnectOnStart": "Anslut vid start",
+  "appSettings_autoConnectOnStartSubtitle": "Ansluter till den senaste radion när appen startar, om du inte själv har kopplat från",
+  "appSettings_keepConnected": "Håll anslutningen i bakgrunden",
+  "appSettings_keepConnectedSubtitle": "Android startar MeshCore Open när {name} kommer inom räckvidd, även efter att appen har stängts",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open förblir ansluten till {name} i bakgrunden",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Anslut först till en Bluetooth-radio",
+  "appSettings_keepConnectedNotFound": "{name} hittades inte. Slå på den, håll den nära och försök igen.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android kunde inte ställa in det",
   "appSettings_batteryOptimization": "Bakgrundsaktivitet",
   "appSettings_batteryOptimizationSubtitle": "Sätt MeshCore Open till “Inte optimera” i batteriinställningarna så att meddelanden fortsätter att komma i bakgrunden",
   "contacts_storageFull": "Kontaktlagringen på noden är full. Nya noder kan inte läggas till förrän kontakter har tagits bort.",
