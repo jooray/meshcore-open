@@ -606,6 +606,36 @@
   "appSettings_notificationsDisabled": "Notifications disabled",
   "appSettings_messageNotifications": "Message Notifications",
   "appSettings_messageNotificationsSubtitle": "Show notification when receiving new messages",
+  "appSettings_connectionSection": "Connection",
+  "appSettings_autoConnectOnStart": "Connect on start",
+  "appSettings_autoConnectOnStartSubtitle": "Connect to the last radio when the app starts, unless you disconnected it",
+  "appSettings_keepConnected": "Keep connected in the background",
+  "appSettings_keepConnectedSubtitle": "Android starts MeshCore Open when {name} comes into range, even after closing the app",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "Lets MeshCore Open stay connected to {name} in the background",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Connect to a Bluetooth radio first",
+  "appSettings_keepConnectedNotFound": "{name} was not found. Turn it on, keep it close and try again.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android could not set this up",
   "appSettings_batteryOptimization": "Background Activity",
   "appSettings_batteryOptimizationSubtitle": "Set MeshCore Open to \"Don't optimize\" in battery settings so messages keep arriving in the background",
   "appSettings_channelMessageNotifications": "Channel Message Notifications",

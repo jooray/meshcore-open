@@ -195,6 +195,36 @@
   "appSettings_notificationsDisabled": "Notificaties zijn uitgeschakeld",
   "appSettings_messageNotifications": "Berichtnotificaties",
   "appSettings_messageNotificationsSubtitle": "Toon notificatie bij het ontvangen van nieuwe berichten",
+  "appSettings_connectionSection": "Verbinding",
+  "appSettings_autoConnectOnStart": "Verbinden bij start",
+  "appSettings_autoConnectOnStartSubtitle": "Maakt verbinding met de laatste radio wanneer de app start, tenzij je de verbinding zelf hebt verbroken",
+  "appSettings_keepConnected": "Op de achtergrond verbonden blijven",
+  "appSettings_keepConnectedSubtitle": "Android start MeshCore Open als {name} binnen bereik komt, ook nadat je de app hebt gesloten",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open blijft op de achtergrond verbonden met {name}",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Maak eerst verbinding met een Bluetooth-radio",
+  "appSettings_keepConnectedNotFound": "{name} is niet gevonden. Zet de radio aan, houd hem dichtbij en probeer het opnieuw.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android kon dit niet instellen",
   "appSettings_batteryOptimization": "Achtergrondactiviteit",
   "appSettings_batteryOptimizationSubtitle": "Zet MeshCore Open op \"Niet optimaliseren\" in de batterij-instellingen zodat berichten op de achtergrond blijven binnenkomen",
   "appSettings_channelMessageNotifications": "Kanaalberichtnotificaties",

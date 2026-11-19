@@ -1411,6 +1411,41 @@ class AppLocalizationsCs extends AppLocalizations {
       'Zobrazit oznámení při příchozí nové zprávě';
 
   @override
+  String get appSettings_connectionSection => 'Připojení';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Připojit při spuštění';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Po spuštění aplikace se připojí k poslednímu rádiu, pokud jste ho sami neodpojili';
+
+  @override
+  String get appSettings_keepConnected => 'Zůstat připojen na pozadí';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android spustí MeshCore Open, když bude $name v dosahu, i po zavření aplikace';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open zůstane na pozadí připojený k rádiu $name';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Nejdřív se připojte k rádiu přes Bluetooth';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return 'Rádio $name se nenašlo. Zapněte ho, přibližte ho a zkuste to znovu.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed => 'Android to nedokázal nastavit';
+
+  @override
   String get appSettings_batteryOptimization => 'Aktivita na pozadí';
 
   @override

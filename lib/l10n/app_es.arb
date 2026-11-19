@@ -3126,6 +3126,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Conexión",
+  "appSettings_autoConnectOnStart": "Conectar al iniciar",
+  "appSettings_autoConnectOnStartSubtitle": "Al abrir la app, se conecta a la última radio, salvo que la hayas desconectado tú",
+  "appSettings_keepConnected": "Mantener la conexión en segundo plano",
+  "appSettings_keepConnectedSubtitle": "Android abre MeshCore Open cuando {name} esté al alcance, incluso después de cerrar la app",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open se mantiene conectado a {name} en segundo plano",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Primero conéctate a una radio Bluetooth",
+  "appSettings_keepConnectedNotFound": "No se encontró {name}. Enciéndela, mantenla cerca e inténtalo de nuevo.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android no pudo configurarlo",
   "appSettings_batteryOptimization": "Actividad en segundo plano",
   "appSettings_batteryOptimizationSubtitle": "Establece MeshCore Open en \"No optimizar\" en los ajustes de batería para que los mensajes sigan llegando en segundo plano",
   "contacts_storageFull": "El almacenamiento de contactos del nodo está lleno. No se pueden añadir nodos nuevos hasta que se eliminen contactos.",

@@ -3102,6 +3102,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Връзка",
+  "appSettings_autoConnectOnStart": "Свързване при стартиране",
+  "appSettings_autoConnectOnStartSubtitle": "При стартиране на приложението се свързва с последното радио, освен ако не сте го разкачили сами",
+  "appSettings_keepConnected": "Поддържане на връзката във фона",
+  "appSettings_keepConnectedSubtitle": "Android стартира MeshCore Open, когато {name} е в обхват, дори след затваряне на приложението",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open остава свързан с {name} във фона",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Първо се свържете с Bluetooth радио",
+  "appSettings_keepConnectedNotFound": "Устройството {name} не е намерено. Включете го, дръжте го наблизо и опитайте отново.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android не успя да го настрои",
   "appSettings_batteryOptimization": "Дейност във фона",
   "appSettings_batteryOptimizationSubtitle": "Задайтете за MeshCore Open стойност „Не оптимизирай“ в настройките на батерията, за да продължават да пристигат съобщения във фона",
   "contacts_storageFull": "Паметта за контакти на възела е запълнена. Нови възли не могат да се добавят, докато контактите не бъдат премахнати.",

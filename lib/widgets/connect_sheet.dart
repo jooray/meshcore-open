@@ -10,6 +10,7 @@ import '../storage/last_radio_store.dart';
 import '../utils/dialog_utils.dart';
 import '../utils/platform_info.dart';
 import 'mesh_ui.dart';
+import 'radio_connection_settings_section.dart';
 
 /// Ways to get a radio connected: reconnect to the last one, pick another,
 /// or stop a pending automatic reconnect.
@@ -94,6 +95,10 @@ class _ConnectSheet extends StatelessWidget {
           subtitle: Text(l10n.connectSheet_chooseRadioSubtitle),
           onTap: () => _chooseRadio(context, lastRadio),
         ),
+        if (PlatformInfo.isAndroid &&
+            lastRadio != null &&
+            lastRadio.canReconnectBle)
+          const KeepConnectedTile(onlyWhenOff: true),
         if (connector.isAutoReconnectScheduled)
           ListTile(
             minTileHeight: 64,

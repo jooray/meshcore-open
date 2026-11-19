@@ -3082,6 +3082,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Підключення",
+  "appSettings_autoConnectOnStart": "Підключатися під час запуску",
+  "appSettings_autoConnectOnStartSubtitle": "Під час запуску застосунок підключається до останнього радіо, якщо ви не відключили його самі",
+  "appSettings_keepConnected": "Підтримувати підключення у фоні",
+  "appSettings_keepConnectedSubtitle": "Android запустить MeshCore Open, коли {name} опиниться в зоні дії, навіть після закриття застосунку",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open залишається підключеним до {name} у фоні",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Спершу підключіться до Bluetooth-радіо",
+  "appSettings_keepConnectedNotFound": "{name} не знайдено. Увімкніть пристрій, тримайте його поруч і повторіть спробу.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android не зміг це налаштувати",
   "appSettings_batteryOptimization": "Робота у фоні",
   "appSettings_batteryOptimizationSubtitle": "Встановіть для MeshCore Open значення «Не оптимізувати» в налаштуваннях батареї, щоб повідомлення надходили й у фоні",
   "contacts_storageFull": "Сховище контактів на вузлі заповнене. Нові вузли неможливо додати, доки контакти не буде видалено.",

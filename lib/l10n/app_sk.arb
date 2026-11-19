@@ -3103,6 +3103,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Pripojenie",
+  "appSettings_autoConnectOnStart": "Pripojiť pri spustení",
+  "appSettings_autoConnectOnStartSubtitle": "Po spustení aplikácie sa pripojí k poslednému rádiu, ak ste ho sami neodpojili",
+  "appSettings_keepConnected": "Zostať pripojený na pozadí",
+  "appSettings_keepConnectedSubtitle": "Android spustí MeshCore Open, keď bude {name} v dosahu, aj po zavretí aplikácie",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open zostane na pozadí pripojený k rádiu {name}",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Najprv sa pripojte k rádiu cez Bluetooth",
+  "appSettings_keepConnectedNotFound": "Rádio {name} sa nenašlo. Zapnite ho, dajte ho bližšie a skúste to znova.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android to nedokázal nastaviť",
   "appSettings_batteryOptimization": "Aktivita na pozadí",
   "appSettings_batteryOptimizationSubtitle": "V nastaveniach batérie nastavte MeshCore Open na „Nie optimalizovať“, aby správy naďalej prichádzali na pozadí",
   "contacts_storageFull": "Úložisko kontaktov v uzle je plné. Nové uzly nemožno pridať, kým neodstránite kontakty.",

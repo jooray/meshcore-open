@@ -18,6 +18,7 @@ import '../widgets/language_picker_sheet.dart';
 import '../widgets/mesh_nav_tile.dart';
 import '../widgets/mesh_ui.dart';
 import '../widgets/network_map_settings_section.dart';
+import '../widgets/radio_connection_settings_section.dart';
 import '../widgets/settings_reveal.dart';
 import '../widgets/sync_progress_overlay.dart';
 import '../widgets/translation_settings_section.dart';
@@ -58,6 +59,13 @@ class AppSettingsScreen extends StatelessWidget {
               MeshCard(
                 padding: EdgeInsets.zero,
                 child: _settingsCard(_buildAppearanceContent),
+              ),
+
+              // CONNECTION
+              SectionHeader(context.l10n.appSettings_connectionSection),
+              const MeshCard(
+                padding: EdgeInsets.zero,
+                child: RadioConnectionSettingsSection(),
               ),
 
               // NOTIFICATIONS

@@ -2399,6 +2399,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Подключение",
+  "appSettings_autoConnectOnStart": "Подключаться при запуске",
+  "appSettings_autoConnectOnStartSubtitle": "При запуске приложение подключается к последнему радио, если вы не отключали его сами",
+  "appSettings_keepConnected": "Держать соединение в фоне",
+  "appSettings_keepConnectedSubtitle": "Android запустит MeshCore Open, когда {name} окажется в зоне действия, даже после закрытия приложения",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open остаётся подключённым к {name} в фоне",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Сначала подключитесь к Bluetooth-радио",
+  "appSettings_keepConnectedNotFound": "{name} не найдено. Включите устройство, держите его рядом и повторите попытку.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android не смог это настроить",
   "appSettings_batteryOptimization": "Работа в фоне",
   "appSettings_batteryOptimizationSubtitle": "Задайте для MeshCore Open значение «Не оптимизировать» в настройках батареи, чтобы сообщения продолжали приходить в фоне",
   "contacts_storageFull": "Хранилище контактов на узле заполнено. Новые узлы нельзя добавить, пока контакты не удалены.",

@@ -1412,6 +1412,42 @@ class AppLocalizationsEs extends AppLocalizations {
       'Mostrar notificación al recibir nuevos mensajes';
 
   @override
+  String get appSettings_connectionSection => 'Conexión';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Conectar al iniciar';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Al abrir la app, se conecta a la última radio, salvo que la hayas desconectado tú';
+
+  @override
+  String get appSettings_keepConnected =>
+      'Mantener la conexión en segundo plano';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android abre MeshCore Open cuando $name esté al alcance, incluso después de cerrar la app';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open se mantiene conectado a $name en segundo plano';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Primero conéctate a una radio Bluetooth';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return 'No se encontró $name. Enciéndela, mantenla cerca e inténtalo de nuevo.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed => 'Android no pudo configurarlo';
+
+  @override
   String get appSettings_batteryOptimization => 'Actividad en segundo plano';
 
   @override

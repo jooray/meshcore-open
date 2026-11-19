@@ -3126,6 +3126,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "接続",
+  "appSettings_autoConnectOnStart": "起動時に接続",
+  "appSettings_autoConnectOnStartSubtitle": "アプリの起動時に、前回接続した無線機へ自動で接続します。自分で切断した場合は接続しません",
+  "appSettings_keepConnected": "バックグラウンドで接続を維持",
+  "appSettings_keepConnectedSubtitle": "アプリを閉じた後でも、{name} が通信圏内に入ると Android が MeshCore Open を起動します",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open がバックグラウンドで {name} との接続を維持します",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "先に Bluetooth 対応の無線機へ接続してください",
+  "appSettings_keepConnectedNotFound": "{name} が見つかりません。電源を入れて近くに置き、もう一度お試しください。",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android で設定できませんでした",
   "appSettings_batteryOptimization": "バックグラウンド動作",
   "appSettings_batteryOptimizationSubtitle": "バッテリー設定で MeshCore Open を「最適化しない」に設定すると、バックグラウンドでもメッセージを受信し続けられます",
   "contacts_storageFull": "ノードの連絡先ストレージが満杯です。連絡先を削除するまで、新しいノードを追加できません。",

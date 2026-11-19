@@ -1352,6 +1352,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String get appSettings_messageNotificationsSubtitle => '새로운 메시지를 받을 때 알림 표시';
 
   @override
+  String get appSettings_connectionSection => '연결';
+
+  @override
+  String get appSettings_autoConnectOnStart => '시작 시 연결';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      '앱을 시작하면 마지막으로 연결한 라디오에 연결합니다. 직접 연결을 끊은 경우는 제외합니다';
+
+  @override
+  String get appSettings_keepConnected => '백그라운드에서 연결 유지';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return '앱을 닫은 뒤에도 $name이(가) 범위 안에 들어오면 Android가 MeshCore Open을 실행합니다';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open이 백그라운드에서 $name과(와) 계속 연결됩니다';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio => '먼저 Bluetooth 라디오에 연결하세요';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return '$name을(를) 찾지 못했습니다. 전원을 켜고 가까이 둔 뒤 다시 시도하세요.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed => 'Android에서 설정하지 못했습니다';
+
+  @override
   String get appSettings_batteryOptimization => '백그라운드 작업';
 
   @override
