@@ -3126,6 +3126,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Connexion",
+  "appSettings_autoConnectOnStart": "Se connecter au démarrage",
+  "appSettings_autoConnectOnStartSubtitle": "Se connecte à la dernière radio au lancement de l'app, sauf si vous l'avez déconnectée",
+  "appSettings_keepConnected": "Rester connecté en arrière-plan",
+  "appSettings_keepConnectedSubtitle": "Android lance MeshCore Open dès que {name} est à portée, même après la fermeture de l'app",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open reste connecté à {name} en arrière-plan",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Connectez-vous d'abord à une radio Bluetooth",
+  "appSettings_keepConnectedNotFound": "{name} est introuvable. Allumez-la, gardez-la à proximité et réessayez.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android n'a pas pu le configurer",
   "appSettings_batteryOptimization": "Activité en arrière-plan",
   "appSettings_batteryOptimizationSubtitle": "Définissez MeshCore Open sur « Ne pas optimiser » dans les paramètres de batterie pour que les messages continuent d'arriver en arrière-plan",
   "contacts_storageFull": "Le stockage des contacts sur le nœud est plein. Impossible d'ajouter de nouveaux nœuds tant que des contacts ne sont pas supprimés.",

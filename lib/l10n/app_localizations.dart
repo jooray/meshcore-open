@@ -2593,6 +2593,60 @@ abstract class AppLocalizations {
   /// **'Show notification when receiving new messages'**
   String get appSettings_messageNotificationsSubtitle;
 
+  /// No description provided for @appSettings_connectionSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection'**
+  String get appSettings_connectionSection;
+
+  /// No description provided for @appSettings_autoConnectOnStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect on start'**
+  String get appSettings_autoConnectOnStart;
+
+  /// No description provided for @appSettings_autoConnectOnStartSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the last radio when the app starts, unless you disconnected it'**
+  String get appSettings_autoConnectOnStartSubtitle;
+
+  /// No description provided for @appSettings_keepConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep connected in the background'**
+  String get appSettings_keepConnected;
+
+  /// No description provided for @appSettings_keepConnectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Android starts MeshCore Open when {name} comes into range, even after closing the app'**
+  String appSettings_keepConnectedSubtitle(String name);
+
+  /// No description provided for @appSettings_keepConnectedSubtitleNoPresence.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets MeshCore Open stay connected to {name} in the background'**
+  String appSettings_keepConnectedSubtitleNoPresence(String name);
+
+  /// No description provided for @appSettings_keepConnectedNoRadio.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to a Bluetooth radio first'**
+  String get appSettings_keepConnectedNoRadio;
+
+  /// No description provided for @appSettings_keepConnectedNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was not found. Turn it on, keep it close and try again.'**
+  String appSettings_keepConnectedNotFound(String name);
+
+  /// No description provided for @appSettings_keepConnectedFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Android could not set this up'**
+  String get appSettings_keepConnectedFailed;
+
   /// No description provided for @appSettings_batteryOptimization.
   ///
   /// In en, this message translates to:

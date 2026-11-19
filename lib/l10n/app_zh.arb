@@ -2997,6 +2997,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "连接",
+  "appSettings_autoConnectOnStart": "启动时连接",
+  "appSettings_autoConnectOnStartSubtitle": "应用启动时自动连接上次使用的电台，除非你已手动断开",
+  "appSettings_keepConnected": "在后台保持连接",
+  "appSettings_keepConnectedSubtitle": "即使关闭应用，{name} 进入范围后 Android 也会启动 MeshCore Open",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open 会在后台保持与 {name} 的连接",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "请先连接蓝牙电台",
+  "appSettings_keepConnectedNotFound": "找不到 {name}。请开机并靠近后重试。",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android 无法完成设置",
   "appSettings_batteryOptimization": "后台活动",
   "appSettings_batteryOptimizationSubtitle": "在电池设置中将 MeshCore Open 设为“不优化”，这样后台也能继续接收消息",
   "contacts_storageFull": "节点上的联系人存储已满。在删除联系人之前无法添加新节点。",

@@ -2993,6 +2993,36 @@
       }
     }
   },
+  "appSettings_connectionSection": "Povezava",
+  "appSettings_autoConnectOnStart": "Poveži ob zagonu",
+  "appSettings_autoConnectOnStartSubtitle": "Ob zagonu aplikacije se poveže z zadnjim radiem, razen če ste povezavo prekinili sami",
+  "appSettings_keepConnected": "Ostani povezan v ozadju",
+  "appSettings_keepConnectedSubtitle": "Android zažene MeshCore Open, ko je {name} v dosegu, tudi po zaprtju aplikacije",
+  "@appSettings_keepConnectedSubtitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedSubtitleNoPresence": "MeshCore Open ostane v ozadju povezan z {name}",
+  "@appSettings_keepConnectedSubtitleNoPresence": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedNoRadio": "Najprej se povežite z Bluetooth radiem",
+  "appSettings_keepConnectedNotFound": "Naprava {name} ni bila najdena. Vklopite jo, postavite jo blizu in poskusite znova.",
+  "@appSettings_keepConnectedNotFound": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "appSettings_keepConnectedFailed": "Android tega ni mogel nastaviti",
   "appSettings_batteryOptimization": "Dejavnost v ozadju",
   "appSettings_batteryOptimizationSubtitle": "V nastavitvah baterije nastavite MeshCore Open na „Ne optimiziraj“, da bodo sporočila še naprej prihajala v ozadju",
   "contacts_storageFull": "Pomnilnik stikov v vozlišču je poln. Novih vozlišč ni mogoče dodati, dokler ne odstranite stikov.",

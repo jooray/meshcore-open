@@ -1408,6 +1408,42 @@ class AppLocalizationsSl extends AppLocalizations {
       'Pokaži obvestilo ob prejemu novih sporočil.';
 
   @override
+  String get appSettings_connectionSection => 'Povezava';
+
+  @override
+  String get appSettings_autoConnectOnStart => 'Poveži ob zagonu';
+
+  @override
+  String get appSettings_autoConnectOnStartSubtitle =>
+      'Ob zagonu aplikacije se poveže z zadnjim radiem, razen če ste povezavo prekinili sami';
+
+  @override
+  String get appSettings_keepConnected => 'Ostani povezan v ozadju';
+
+  @override
+  String appSettings_keepConnectedSubtitle(String name) {
+    return 'Android zažene MeshCore Open, ko je $name v dosegu, tudi po zaprtju aplikacije';
+  }
+
+  @override
+  String appSettings_keepConnectedSubtitleNoPresence(String name) {
+    return 'MeshCore Open ostane v ozadju povezan z $name';
+  }
+
+  @override
+  String get appSettings_keepConnectedNoRadio =>
+      'Najprej se povežite z Bluetooth radiem';
+
+  @override
+  String appSettings_keepConnectedNotFound(String name) {
+    return 'Naprava $name ni bila najdena. Vklopite jo, postavite jo blizu in poskusite znova.';
+  }
+
+  @override
+  String get appSettings_keepConnectedFailed =>
+      'Android tega ni mogel nastaviti';
+
+  @override
   String get appSettings_batteryOptimization => 'Dejavnost v ozadju';
 
   @override
