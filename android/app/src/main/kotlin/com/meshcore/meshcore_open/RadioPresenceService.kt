@@ -59,6 +59,9 @@ class RadioPresenceService : CompanionDeviceService() {
     }
 
     private fun onPresence(address: String, present: Boolean) {
+        // Android 16+ can report one change through more than one callback.
+        if (lastPresence[address.uppercase()] == present) return
+        lastPresence[address.uppercase()] = present
         Log.i(TAG, "Radio $address ${if (present) "appeared" else "disappeared"}")
         if (present) CompanionRadioPlugin.startHeadlessEngine(this)
         CompanionRadioPlugin.dispatchPresence(address, present)
@@ -66,5 +69,8 @@ class RadioPresenceService : CompanionDeviceService() {
 
     private companion object {
         const val TAG = "CompanionRadio"
+
+        // Main thread only.
+        val lastPresence = mutableMapOf<String, Boolean>()
     }
 }
