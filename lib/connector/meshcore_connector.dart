@@ -53,6 +53,7 @@ import '../services/path_history_service.dart';
 import '../services/app_settings_service.dart'
     show AppSettingsService, ChannelNotificationMode;
 import '../services/background_service.dart';
+import '../services/companion_device_service.dart';
 import '../services/timeout_prediction_service.dart';
 import '../services/translation_service.dart';
 import '../services/notification_reply.dart';
@@ -296,6 +297,13 @@ class MeshCoreConnector extends ChangeNotifier {
   final ValueNotifier<CompanionRadioStats?> radioStatsNotifier =
       ValueNotifier<CompanionRadioStats?>(null);
   int _reconnectAttempts = 0;
+  // Android: after this many quick BLE reconnect attempts the radio is taken
+  // to be out of range, and one pending autoConnect GATT connection waits for
+  // it instead of a timer loop of active 15 s connection attempts.
+  static const int _quickBleReconnectAttempts = 3;
+  BluetoothDevice? _backgroundWaitDevice;
+  StreamSubscription<BluetoothConnectionState>? _backgroundWaitSubscription;
+  StreamSubscription<CompanionPresence>? _companionPresenceSubscription;
   // Endpoint of the last TCP link that completed its handshake. Set only
   // after SELF_INFO, cleared on a manual disconnect or a user-started
   // connect, so a failed first attempt never loops on a bad address.
@@ -605,7 +613,11 @@ class MeshCoreConnector extends ChangeNotifier {
       _activeTransport == MeshCoreTransportType.usb;
   bool get isAutoReconnectScheduled =>
       (_shouldAutoReconnect || _shouldAutoReconnectTcp) &&
-      (_reconnectTimer?.isActive ?? false);
+      ((_reconnectTimer?.isActive ?? false) || _backgroundWaitDevice != null);
+
+  /// True while a pending background connection waits for the radio to come
+  /// back into range (Android).
+  bool get isWaitingForRadio => _backgroundWaitDevice != null;
 
   @visibleForTesting
   int get reconnectAttemptsForTesting => _reconnectAttempts;
@@ -2415,6 +2427,12 @@ class MeshCoreConnector extends ChangeNotifier {
     _appDebugLogService = appDebugLogService;
     _backgroundService = backgroundService;
     _timeoutPredictionService = timeoutPredictionService;
+    if (PlatformInfo.isAndroid) {
+      _companionPresenceSubscription ??= CompanionDeviceService
+          .instance
+          .presence
+          .listen(_onCompanionPresence);
+    }
     _usbManager.setDebugLogService(_appDebugLogService);
     _tcpConnector.setDebugLogService(_appDebugLogService);
 
@@ -3193,6 +3211,7 @@ class MeshCoreConnector extends ChangeNotifier {
     _cancelReconnectTimer();
     _clearTcpReconnectTarget();
     _manualDisconnect = false;
+    _setUserDisconnected(false);
     _resetConnectionHandshakeState();
     _activeTransport = MeshCoreTransportType.usb;
     _setState(MeshCoreConnectionState.connecting);
@@ -3309,6 +3328,7 @@ class MeshCoreConnector extends ChangeNotifier {
       _reconnectAttempts = 0;
     }
     _manualDisconnect = false;
+    _setUserDisconnected(false);
     _resetConnectionHandshakeState();
     _activeTransport = MeshCoreTransportType.tcp;
     final tcpGeneration = ++_tcpConnectGeneration;
@@ -3581,6 +3601,19 @@ class MeshCoreConnector extends ChangeNotifier {
     BluetoothDevice device, {
     String? displayName,
     Future<String?> Function()? linuxPairingPinProvider,
+  }) => _connectBle(
+    device,
+    displayName: displayName,
+    linuxPairingPinProvider: linuxPairingPinProvider,
+  );
+
+  /// [adoptLink] takes over a link a pending background connection already
+  /// opened instead of opening a new one.
+  Future<void> _connectBle(
+    BluetoothDevice device, {
+    String? displayName,
+    Future<String?> Function()? linuxPairingPinProvider,
+    bool adoptLink = false,
   }) async {
     if (_state == MeshCoreConnectionState.connecting ||
         _state == MeshCoreConnectionState.connected) {
@@ -3611,6 +3644,7 @@ class MeshCoreConnector extends ChangeNotifier {
     _lastDeviceId = _deviceId;
     _lastDeviceDisplayName = _deviceDisplayName;
     _manualDisconnect = false;
+    _setUserDisconnected(false);
     _cancelReconnectTimer();
     _clearTcpReconnectTarget();
     _bleInitialSyncStarted = false;
@@ -3763,10 +3797,24 @@ class MeshCoreConnector extends ChangeNotifier {
           );
         }
 
+        // A pending background connection holds its own GATT client; close
+        // it so the direct attempt below does not race it.
+        if (!adoptLink && !PlatformInfo.isWeb && device.isAutoConnectEnabled) {
+          try {
+            await device.disconnect(queue: false);
+          } catch (cleanupError) {
+            _appDebugLogService?.warn(
+              'Closing the background connection failed (continuing): '
+              '$cleanupError',
+              tag: 'BLE Connect',
+            );
+          }
+        }
+
         // A previous app session (e.g. killed from the iOS app switcher) can
         // leave the OS holding a stale link to the peripheral. Clear it before
         // connecting so the fresh attempt doesn't race the stale handle.
-        if (!PlatformInfo.isWeb && device.isConnected) {
+        if (!adoptLink && !PlatformInfo.isWeb && device.isConnected) {
           _appDebugLogService?.warn(
             'Device reports an existing connection before connect; clearing stale link',
             tag: 'BLE Connect',
@@ -3782,7 +3830,14 @@ class MeshCoreConnector extends ChangeNotifier {
         }
 
         try {
-          await attemptConnect();
+          if (adoptLink && device.isConnected) {
+            _appDebugLogService?.info(
+              'Using the link the background connection opened',
+              tag: 'BLE Connect',
+            );
+          } else {
+            await attemptConnect();
+          }
         } catch (error) {
           _appDebugLogService?.error(
             'device.connect() failure: $error',
@@ -4337,6 +4392,156 @@ class MeshCoreConnector extends ChangeNotifier {
   void _cancelReconnectTimer() {
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
+    unawaited(_cancelBackgroundWait());
+  }
+
+  /// Whether a dropped BLE link should stop active reconnect attempts and
+  /// wait for the radio with a pending autoConnect connection, which the
+  /// Bluetooth controller completes when the radio advertises again, with
+  /// the phone's CPU asleep.
+  @visibleForTesting
+  static bool shouldWaitForRadioInBackground({
+    required int reconnectAttempts,
+    required bool isAndroid,
+  }) => isAndroid && reconnectAttempts >= _quickBleReconnectAttempts;
+
+  Future<void> _waitForRadioInBackground() async {
+    if (!_shouldAutoReconnect || _backgroundWaitDevice != null) return;
+    final device =
+        _lastDevice ??
+        (_lastDeviceId == null ? null : BluetoothDevice.fromId(_lastDeviceId!));
+    if (device == null) return;
+    _backgroundWaitDevice = device;
+    _appDebugLogService?.info(
+      'Radio not reachable after $_reconnectAttempts attempts; waiting for it '
+      'with a background connection',
+      tag: 'BLE Connect',
+    );
+    _backgroundWaitSubscription = device.connectionState.listen((state) {
+      if (state == BluetoothConnectionState.connected) {
+        unawaited(_adoptBackgroundConnection(device));
+      }
+    });
+    notifyListeners();
+    try {
+      await device.connect(
+        license: License.nonprofit,
+        autoConnect: true,
+        mtu: null,
+      );
+    } catch (e) {
+      if (!identical(_backgroundWaitDevice, device)) return;
+      _appDebugLogService?.warn(
+        'Background connection request failed: $e',
+        tag: 'BLE Connect',
+      );
+      await _cancelBackgroundWait();
+      _scheduleReconnect(waitInBackground: false);
+    }
+  }
+
+  Future<void> _adoptBackgroundConnection(BluetoothDevice device) async {
+    if (!identical(_backgroundWaitDevice, device)) return;
+    await _cancelBackgroundWait(keepLink: true);
+    if (!_shouldAutoReconnect ||
+        _state == MeshCoreConnectionState.connecting ||
+        _state == MeshCoreConnectionState.connected) {
+      return;
+    }
+    _appDebugLogService?.info(
+      'Radio is back in range; background connection opened',
+      tag: 'BLE Connect',
+    );
+    try {
+      await _connectBle(
+        device,
+        displayName: _lastDeviceDisplayName,
+        adoptLink: true,
+      );
+    } catch (_) {
+      // The failed attempt tore down through disconnect(manual: false),
+      // which already rescheduled.
+    }
+  }
+
+  /// Stops waiting for the radio. [keepLink] leaves the GATT client open
+  /// because the radio just connected through it.
+  Future<void> _cancelBackgroundWait({bool keepLink = false}) async {
+    final device = _backgroundWaitDevice;
+    if (device == null) return;
+    _backgroundWaitDevice = null;
+    final subscription = _backgroundWaitSubscription;
+    _backgroundWaitSubscription = null;
+    await subscription?.cancel();
+    if (!keepLink) {
+      try {
+        await device.disconnect(queue: false);
+      } catch (e) {
+        _appDebugLogService?.warn(
+          'Closing the background connection failed: $e',
+          tag: 'BLE Connect',
+        );
+      }
+    }
+    if (!_disposed) notifyListeners();
+  }
+
+  /// Android reported that an associated radio came into range or left it.
+  void _onCompanionPresence(CompanionPresence event) {
+    _appDebugLogService?.info(
+      'Companion device ${event.address} '
+      '${event.present ? 'appeared' : 'disappeared'}',
+      tag: 'Companion',
+    );
+    if (!event.present || _disposed) return;
+    if (_state != MeshCoreConnectionState.disconnected) return;
+    // A pending background connection completes on its own.
+    if (_backgroundWaitDevice != null) return;
+    final radio = _lastRadio;
+    final address =
+        _lastDeviceId ??
+        ((radio?.canReconnectBle ?? false) ? radio!.bleRemoteId : null);
+    if (address == null || address.toUpperCase() != event.address) return;
+    if (_manualDisconnect || _userDisconnected) return;
+    if (_activeTransport != MeshCoreTransportType.bluetooth) return;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    unawaited(
+      _connectBle(
+        BluetoothDevice.fromId(address),
+        displayName:
+            _lastDeviceDisplayName ?? radio?.bleDisplayName ?? radio?.name,
+      ).catchError((Object e) {
+        _appDebugLogService?.warn(
+          'Connect after the radio appeared failed: $e',
+          tag: 'Companion',
+        );
+      }),
+    );
+  }
+
+  bool get _userDisconnected {
+    try {
+      return _lastRadioStore.userDisconnected;
+    } on StateError {
+      return false;
+    }
+  }
+
+  /// Remembers across restarts whether the user disconnected the radio, and
+  /// stops Android from waking the app for a radio the user let go.
+  void _setUserDisconnected(bool value) {
+    if (_userDisconnected == value) return;
+    try {
+      unawaited(_lastRadioStore.setUserDisconnected(value));
+    } on StateError {
+      // Preferences are not loaded (widget tests); nothing to remember.
+      return;
+    }
+    final address = _lastDeviceId ?? _lastRadio?.bleRemoteId;
+    if (PlatformInfo.isAndroid && address != null) {
+      unawaited(CompanionDeviceService.instance.setObserving(address, !value));
+    }
   }
 
   int _nextReconnectDelayMs() {
@@ -4346,9 +4551,19 @@ class MeshCoreConnector extends ChangeNotifier {
     return delayMs > 30000 ? 30000 : delayMs;
   }
 
-  void _scheduleReconnect() {
+  void _scheduleReconnect({bool waitInBackground = true}) {
     if (!_shouldAutoReconnect) return;
-    if (_reconnectTimer?.isActive == true) return;
+    if (_reconnectTimer?.isActive == true || _backgroundWaitDevice != null) {
+      return;
+    }
+    if (waitInBackground &&
+        shouldWaitForRadioInBackground(
+          reconnectAttempts: _reconnectAttempts,
+          isAndroid: PlatformInfo.isAndroid,
+        )) {
+      unawaited(_waitForRadioInBackground());
+      return;
+    }
 
     final delayMs = _nextReconnectDelayMs();
     _reconnectTimer = Timer(Duration(milliseconds: delayMs), () async {
@@ -4418,6 +4633,7 @@ class MeshCoreConnector extends ChangeNotifier {
         // request, otherwise _manualDisconnect stays false and its tail
         // schedules an auto-reconnect the user did not ask for.
         _manualDisconnect = true;
+        _setUserDisconnected(true);
         _cancelReconnectTimer();
         _clearTcpReconnectTarget();
         unawaited(_backgroundService?.stop());
@@ -4471,6 +4687,7 @@ class MeshCoreConnector extends ChangeNotifier {
 
     if (manual) {
       _manualDisconnect = true;
+      _setUserDisconnected(true);
       _cancelReconnectTimer();
       _reconnectAttempts = 0;
       _clearTcpReconnectTarget();
@@ -10191,6 +10408,43 @@ class MeshCoreConnector extends ChangeNotifier {
     if (!_disposed) notifyListeners();
   }
 
+  /// Connects to the remembered radio when the app starts, unless the user
+  /// disconnected it or turned the setting off. A start caused by Android
+  /// reporting the associated radio in range connects regardless of the
+  /// setting: the user asked for that by keeping it connected in the
+  /// background.
+  Future<bool> connectOnStart() async {
+    if (PlatformInfo.isWeb || _disposed) return false;
+    final startedByRadio = await CompanionDeviceService.instance
+        .takeStartedByPresence();
+    final radio = _lastRadio;
+    final enabled = _appSettingsService?.settings.autoConnectOnStart ?? true;
+    if (!shouldConnectOnStart(
+      hasRadio:
+          radio != null && (radio.canReconnectBle || radio.canReconnectTcp),
+      userDisconnected: _userDisconnected,
+      settingEnabled: enabled,
+      startedByRadio: startedByRadio,
+    )) {
+      return false;
+    }
+    if (_state != MeshCoreConnectionState.disconnected) return false;
+    _appDebugLogService?.info(
+      'Connecting to the last radio on start'
+      '${startedByRadio ? ' (Android reported it in range)' : ''}',
+      tag: 'Connection',
+    );
+    return reconnectToLastRadio();
+  }
+
+  @visibleForTesting
+  static bool shouldConnectOnStart({
+    required bool hasRadio,
+    required bool userDisconnected,
+    required bool settingEnabled,
+    required bool startedByRadio,
+  }) => hasRadio && !userDisconnected && (settingEnabled || startedByRadio);
+
   /// Connects to the remembered radio over BLE or TCP. Returns whether a
   /// connection was made; USB and web need the user to pick a port.
   Future<bool> reconnectToLastRadio() async {
@@ -10224,6 +10478,7 @@ class MeshCoreConnector extends ChangeNotifier {
       return;
     }
     _manualDisconnect = true;
+    _setUserDisconnected(true);
     _cancelReconnectTimer();
     _reconnectAttempts = 0;
     _clearTcpReconnectTarget();
@@ -10355,6 +10610,8 @@ class MeshCoreConnector extends ChangeNotifier {
     _scanSubscription?.cancel();
     _isScanningSubscription?.cancel();
     _connectionSubscription?.cancel();
+    _companionPresenceSubscription?.cancel();
+    _backgroundWaitSubscription?.cancel();
     _usbFrameSubscription?.cancel();
     _notifySubscription?.cancel();
     _notificationReplySubscription?.cancel();

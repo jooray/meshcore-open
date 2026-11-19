@@ -214,6 +214,7 @@ void main() async {
   );
 
   await connector.restoreLastRadio();
+  unawaited(connector.connectOnStart());
 
   runApp(
     MeshCoreApp(

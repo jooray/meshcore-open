@@ -86,6 +86,17 @@ class LastRadio {
 class LastRadioStore {
   static const String prefsKey = 'last_radio';
 
+  /// Set while the user has disconnected the radio on purpose, so a restart
+  /// does not connect it again behind their back.
+  static const String userDisconnectedKey = 'last_radio_user_disconnected';
+
+  bool get userDisconnected =>
+      PrefsManager.instance.getBool(userDisconnectedKey) ?? false;
+
+  Future<void> setUserDisconnected(bool value) => value
+      ? PrefsManager.instance.setBool(userDisconnectedKey, true)
+      : PrefsManager.instance.remove(userDisconnectedKey);
+
   LastRadio? load() {
     final raw = PrefsManager.instance.getString(prefsKey);
     if (raw == null || raw.isEmpty) return null;

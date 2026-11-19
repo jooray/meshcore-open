@@ -168,6 +168,10 @@ class AppSettings {
   final String? holidayThemeDismissed;
   final String? languageOverride; // null = system default
   final bool appDebugLogEnabled;
+
+  /// Connect to the remembered radio when the app starts, unless the user
+  /// disconnected it.
+  final bool autoConnectOnStart;
   final Map<String, String> batteryChemistryByDeviceId;
   final Map<String, String> batteryChemistryByRepeaterId;
   final UnitSystem unitSystem;
@@ -306,6 +310,7 @@ class AppSettings {
     this.holidayThemeDismissed,
     this.languageOverride,
     this.appDebugLogEnabled = false,
+    this.autoConnectOnStart = true,
     Map<String, String>? batteryChemistryByDeviceId,
     Map<String, String>? batteryChemistryByRepeaterId,
     this.unitSystem = UnitSystem.metric,
@@ -405,6 +410,7 @@ class AppSettings {
       'holiday_theme_dismissed': holidayThemeDismissed,
       'language_override': languageOverride,
       'app_debug_log_enabled': appDebugLogEnabled,
+      'auto_connect_on_start': autoConnectOnStart,
       'battery_chemistry_by_device_id': batteryChemistryByDeviceId,
       'battery_chemistry_by_repeater_id': batteryChemistryByRepeaterId,
       'unit_system': unitSystem.value,
@@ -566,6 +572,7 @@ class AppSettings {
       holidayThemeDismissed: json['holiday_theme_dismissed'] as String?,
       languageOverride: json['language_override'] as String?,
       appDebugLogEnabled: json['app_debug_log_enabled'] as bool? ?? false,
+      autoConnectOnStart: json['auto_connect_on_start'] as bool? ?? true,
       batteryChemistryByDeviceId:
           (json['battery_chemistry_by_device_id'] as Map?)?.map(
             (key, value) => MapEntry(key.toString(), value.toString()),
@@ -717,6 +724,7 @@ class AppSettings {
     Object? holidayThemeDismissed = _unset,
     Object? languageOverride = _unset,
     bool? appDebugLogEnabled,
+    bool? autoConnectOnStart,
     Map<String, String>? batteryChemistryByDeviceId,
     Map<String, String>? batteryChemistryByRepeaterId,
     UnitSystem? unitSystem,
@@ -822,6 +830,7 @@ class AppSettings {
           ? this.languageOverride
           : languageOverride as String?,
       appDebugLogEnabled: appDebugLogEnabled ?? this.appDebugLogEnabled,
+      autoConnectOnStart: autoConnectOnStart ?? this.autoConnectOnStart,
       batteryChemistryByDeviceId:
           batteryChemistryByDeviceId ?? this.batteryChemistryByDeviceId,
       batteryChemistryByRepeaterId:
