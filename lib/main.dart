@@ -62,7 +62,10 @@ void main() async {
   // 10-14 in too so they lay out the same way under the bars. Flutter ignores
   // this mode before Android 10, where the old layout remains.
   if (PlatformInfo.isAndroid) {
-    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    // Not awaited: when Android starts the app without a window (the radio
+    // came into range, see CompanionRadioPlugin) no platform plugin answers
+    // until an activity attaches, and awaiting would stall startup.
+    unawaited(SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge));
     // Android's scrolling screenshot ("Capture more") for Flutter lists.
     ScrollCaptureService.initialize();
   }
